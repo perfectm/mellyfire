@@ -330,14 +330,64 @@
 #social-security-info .text-muted,
 #spouse-info .text-muted,
 #four01k-breakdown .text-muted {
-    color: #cbd5e0 !important;
+    color: #e2e8f0 !important;
+    opacity: 1 !important;
 }
 
-#advanced-breakdown h4, #advanced-breakdown h6,
-#social-security-info h4, #social-security-info h6,
-#spouse-info h4, #spouse-info h6,
-#four01k-breakdown h4, #four01k-breakdown h6 {
+#advanced-breakdown h1, #advanced-breakdown h2, #advanced-breakdown h3,
+#advanced-breakdown h4, #advanced-breakdown h5, #advanced-breakdown h6,
+#social-security-info h1, #social-security-info h2, #social-security-info h3,
+#social-security-info h4, #social-security-info h5, #social-security-info h6,
+#spouse-info h1, #spouse-info h2, #spouse-info h3,
+#spouse-info h4, #spouse-info h5, #spouse-info h6,
+#four01k-breakdown h1, #four01k-breakdown h2, #four01k-breakdown h3,
+#four01k-breakdown h4, #four01k-breakdown h5, #four01k-breakdown h6 {
     color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+#advanced-breakdown small,
+#social-security-info small,
+#spouse-info small,
+#four01k-breakdown small {
+    color: #e2e8f0 !important;
+    opacity: 0.9 !important;
+}
+
+#advanced-breakdown p,
+#social-security-info p,
+#spouse-info p,
+#four01k-breakdown p {
+    color: #f7fafc !important;
+}
+
+/* Specific color overrides for monetary values */
+#advanced-breakdown .text-primary,
+#social-security-info .text-primary,
+#spouse-info .text-primary,
+#four01k-breakdown .text-primary {
+    color: #90cdf4 !important;
+}
+
+#advanced-breakdown .text-success,
+#social-security-info .text-success,
+#spouse-info .text-success,
+#four01k-breakdown .text-success {
+    color: #68d391 !important;
+}
+
+#advanced-breakdown .text-info,
+#social-security-info .text-info,
+#spouse-info .text-info,
+#four01k-breakdown .text-info {
+    color: #63b3ed !important;
+}
+
+#advanced-breakdown .text-warning,
+#social-security-info .text-warning,
+#spouse-info .text-warning,
+#four01k-breakdown .text-warning {
+    color: #fbb040 !important;
 }
 
 /* Status indicators with better contrast */
