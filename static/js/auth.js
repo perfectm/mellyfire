@@ -137,9 +137,12 @@ class AuthManager {
     }
 
     async loadCalculation(calculationId) {
+        alert('Load button clicked! ID: ' + calculationId);
         console.log('loadCalculation called with ID:', calculationId);
         try {
-            const response = await fetch('/api/calculations');
+            const response = await fetch('/api/calculations', {
+                headers: this.getAuthHeaders()
+            });
             console.log('Fetch response status:', response.status);
             if (response.ok) {
                 const calculations = await response.json();
