@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}FIRE Calculator - Financial Independence Retire Early{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-gradient-primary text-white text-center py-5 mb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-fire text-warning"></i>
+                    Take Control of Your Financial Future
+                </h1>
+                <p class="lead mb-4">
+                    Calculate your path to Financial Independence and Retire Early (FIRE) with our comprehensive Coast FIRE calculator.
+                    Discover when you can stop saving and coast to retirement.
+                </p>
+                <a href="/calculator" class="btn btn-warning btn-lg px-4 py-2">
+                    <i class="fas fa-calculator"></i>
+                    Start Calculating
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container">
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-line fa-3x text-primary"></i>
+                    </div>
+                    <h4 class="card-title">Coast FIRE Calculator</h4>
+                    <p class="card-text">
+                        Determine when you've saved enough to coast to retirement without additional contributions.
+                        See your financial independence timeline visualized.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-users fa-3x text-success"></i>
+                    </div>
+                    <h4 class="card-title">User Accounts</h4>
+                    <p class="card-text">
+                        Save your calculations, track your progress over time, and compare different scenarios
+                        with your personal account.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-piggy-bank fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="card-title">Comprehensive Analysis</h4>
+                    <p class="card-text">
+                        Advanced projections including inflation, Social Security, and various investment returns.
+                        Based on proven FIRE community principles.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- What is Coast FIRE Section -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold text-primary">What is Coast FIRE?</h2>
+                    <p class="lead text-muted">
+                        Understanding the path to financial independence
+                    </p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-card p-4">
+                            <h4 class="text-primary mb-3">
+                                <i class="fas fa-rocket"></i>
+                                Coast FIRE Explained
+                            </h4>
+                            <p>
+                                Coast FIRE is achieved when you've saved enough money that it will grow 
+                                (without additional contributions) to support your retirement at traditional 
+                                retirement age. Once you reach Coast FIRE, you can "coast" - meaning you 
+                                no longer need to save for retirement, just cover your current expenses.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-card p-4">
+                            <h4 class="text-success mb-3">
+                                <i class="fas fa-key"></i>
+                                Key Benefits
+                            </h4>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Work flexibility and career changes</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Reduced financial stress</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Focus on lifestyle over saving rate</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Earlier "financial freedom" milestone</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted">
+                        <strong>Formula:</strong> Coast FIRE Number = FIRE Number ÷ (1 + Real Return Rate)^Years to Retirement
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="container py-5">
+    <div class="text-center">
+        <h3 class="mb-4">Ready to Calculate Your Coast FIRE Number?</h3>
+        <p class="lead text-muted mb-4">
+            Join thousands of people planning their financial independence journey.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="/register" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+            </a>
+            <a href="/calculator" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-calculator"></i>
+                Try Calculator
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    margin: 0 15px;
+}
+
+.feature-icon {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-card {
+    background: white;
+    border-radius: 10px;
+    border-left: 4px solid var(--bs-primary);
+    height: 100%;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+</style>
+{% endblock %}

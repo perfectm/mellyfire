@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}FIRE Calculator - Coast FIRE Calculator{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Calculator Form -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 1rem;">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-calculator"></i>
+                        FIRE Calculator
+                    </h4>
+                </div>
+                
+                <div class="card-body">
+                    <form id="fire-form">
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h6 class="text-primary fw-bold mb-3">Personal Information</h6>
+                            
+                            <div class="mb-3">
+                                <label for="current_age" class="form-label">Current Age</label>
+                                <input type="number" class="form-control" id="current_age" name="current_age" 
+                                       min="18" max="100" value="30" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="retirement_age" class="form-label">Desired Retirement Age</label>
+                                <input type="number" class="form-control" id="retirement_age" name="retirement_age" 
+                                       min="50" max="100" value="65" required>
+                            </div>
+                        </div>
+
+                        <!-- Financial Information -->
+                        <div class="mb-4">
+                            <h6 class="text-primary fw-bold mb-3">Current Finances</h6>
+                            
+                            <div class="mb-3">
+                                <label for="current_assets" class="form-label">Current Invested Assets ($)</label>
+                                <input type="text" class="form-control" id="current_assets" name="current_assets" 
+                                       value="100,000" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="monthly_income" class="form-label">Monthly Gross Income ($)</label>
+                                <input type="text" class="form-control" id="monthly_income" name="monthly_income" 
+                                       value="7,000" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="monthly_expenses" class="form-label">Monthly Expenses ($)</label>
+                                <input type="text" class="form-control" id="monthly_expenses" name="monthly_expenses" 
+                                       value="13,000" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="monthly_savings" class="form-label">Monthly Savings/Investments ($)</label>
+                                <input type="text" class="form-control" id="monthly_savings" name="monthly_savings" 
+                                       value="1,500" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="retirement_expenses" class="form-label">Annual Retirement Expenses ($)</label>
+                                <input type="text" class="form-control" id="retirement_expenses" name="retirement_expenses" 
+                                       value="40,000" required>
+                            </div>
+                        </div>
+
+                        <!-- Assumptions -->
+                        <div class="mb-4">
+                            <h6 class="text-primary fw-bold mb-3">Assumptions</h6>
+                            
+                            <div class="mb-3">
+                                <label for="investment_return_rate" class="form-label">Investment Return Rate (%)</label>
+                                <input type="number" class="form-control" id="investment_return_rate" name="investment_return_rate" 
+                                       min="0" max="20" step="0.1" value="7" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="inflation_rate" class="form-label">Inflation Rate (%)</label>
+                                <input type="number" class="form-control" id="inflation_rate" name="inflation_rate" 
+                                       min="0" max="10" step="0.1" value="3" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="safe_withdrawal_rate" class="form-label">Safe Withdrawal Rate (%)</label>
+                                <input type="number" class="form-control" id="safe_withdrawal_rate" name="safe_withdrawal_rate" 
+                                       min="2" max="8" step="0.1" value="4" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calculator"></i>
+                                Calculate FIRE
+                            </button>
+                            
+                            <button type="button" id="save-calculation" class="btn btn-success" style="display: none;">
+                                <i class="fas fa-save"></i>
+                                Save Calculation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-8">
+            <div id="results-section" class="d-none">
+                <!-- Key Metrics -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body text-center">
+                                <h5><i class="fas fa-fire"></i> FIRE Number</h5>
+                                <h2 id="fire-number" class="fw-bold">$0</h2>
+                                <small>Amount needed for full retirement</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body text-center">
+                                <h5><i class="fas fa-ship"></i> Coast FIRE Number</h5>
+                                <h2 id="coast-fire-number" class="fw-bold">$0</h2>
+                                <small>Amount needed today to coast to retirement</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card bg-warning text-dark h-100">
+                            <div class="card-body text-center">
+                                <h5><i class="fas fa-clock"></i> Years to FIRE</h5>
+                                <h2 id="years-to-fire" class="fw-bold">0</h2>
+                                <small>At current savings rate</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card bg-info text-white h-100">
+                            <div class="card-body text-center">
+                                <h5><i class="fas fa-anchor"></i> Coast FIRE Age</h5>
+                                <h2 id="coast-fire-age" class="fw-bold">0</h2>
+                                <small>When you can stop saving</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Indicators -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Current Status</h5>
+                                <div id="status-indicators">
+                                    <!-- Status will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Asset Growth Projection</h5>
+                        <canvas id="projection-chart" height="100"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Analysis & Recommendations</h5>
+                        <div id="analysis-content">
+                            <!-- Analysis will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login prompt for non-authenticated users -->
+            <div id="login-prompt" class="text-center py-5">
+                <i class="fas fa-calculator fa-4x text-muted mb-4"></i>
+                <h3>Calculate Your Path to Financial Independence</h3>
+                <p class="lead text-muted mb-4">
+                    Use our comprehensive FIRE calculator to plan your journey to financial freedom.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="/login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login to Save Results
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="showGuestCalculator()">
+                        <i class="fas fa-play"></i>
+                        Try Without Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Saved Calculations Modal -->
+<div class="modal fade" id="savedCalculationsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Saved Calculations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="saved-calculations-list">
+                    <!-- Saved calculations will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/calculator.js"></script>
+{% endblock %}
