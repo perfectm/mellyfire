@@ -137,9 +137,103 @@ class AuthManager {
     }
 
     async loadCalculation(calculationId) {
-        // This would load a specific calculation into the form
-        // Implementation depends on the calculator.js structure
-        console.log('Loading calculation:', calculationId);
+        try {
+            const response = await fetch('/api/calculations');
+            if (response.ok) {
+                const calculations = await response.json();
+                const calculation = calculations.find(calc => calc.id === calculationId);
+                
+                if (calculation) {
+                    this.populateFormWithCalculation(calculation);
+                    
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('savedCalculationsModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    
+                    // If calculator exists, trigger calculation display
+                    if (window.calculator) {
+                        window.calculator.calculateGuest();
+                    }
+                } else {
+                    alert('Calculation not found');
+                }
+            } else if (response.status === 401) {
+                this.logout();
+            } else {
+                alert('Failed to load calculation');
+            }
+        } catch (error) {
+            console.error('Error loading calculation:', error);
+            alert('Error loading calculation');
+        }
+    }
+    
+    populateFormWithCalculation(calc) {
+        // Helper function to safely set value
+        const setValue = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = value;
+                } else {
+                    element.value = value;
+                }
+                
+                // Trigger change event for toggles
+                if (element.type === 'checkbox') {
+                    element.dispatchEvent(new Event('change'));
+                }
+            }
+        };
+        
+        // Helper function to format numbers with commas for currency fields
+        const formatCurrency = (value) => {
+            return value ? value.toLocaleString() : '0';
+        };
+        
+        // Basic fields
+        setValue('current_age', calc.current_age);
+        setValue('retirement_age', calc.retirement_age);
+        setValue('current_assets', formatCurrency(calc.current_assets));
+        setValue('monthly_income', formatCurrency(calc.monthly_income));
+        setValue('monthly_expenses', formatCurrency(calc.monthly_expenses));
+        setValue('monthly_savings', formatCurrency(calc.monthly_savings));
+        setValue('retirement_expenses', formatCurrency(calc.retirement_expenses));
+        setValue('investment_return_rate', calc.investment_return_rate);
+        setValue('inflation_rate', calc.inflation_rate);
+        setValue('safe_withdrawal_rate', calc.safe_withdrawal_rate);
+        
+        // Advanced mode
+        setValue('advanced_mode', calc.advanced_mode);
+        if (calc.advanced_mode) {
+            setValue('retirement_accounts', formatCurrency(calc.retirement_accounts));
+            setValue('taxable_accounts', formatCurrency(calc.taxable_accounts));
+            setValue('retirement_account_return_rate', calc.retirement_account_return_rate);
+        }
+        
+        // Social Security
+        setValue('social_security_enabled', calc.social_security_enabled);
+        if (calc.social_security_enabled) {
+            setValue('social_security_start_age', calc.social_security_start_age);
+            setValue('social_security_monthly_benefit', formatCurrency(calc.social_security_monthly_benefit));
+        }
+        
+        // Spouse
+        setValue('spouse_enabled', calc.spouse_enabled);
+        if (calc.spouse_enabled) {
+            setValue('spouse_age', calc.spouse_age);
+            setValue('spouse_social_security_enabled', calc.spouse_social_security_enabled);
+            if (calc.spouse_social_security_enabled) {
+                setValue('spouse_social_security_start_age', calc.spouse_social_security_start_age);
+                setValue('spouse_social_security_monthly_benefit', formatCurrency(calc.spouse_social_security_monthly_benefit));
+            }
+        }
+        
+        // 401K contributions
+        setValue('contribution_401k_percentage', calc.contribution_401k_percentage);
+        setValue('employer_match_percentage', calc.employer_match_percentage);
     }
 
     async deleteCalculation(calculationId) {
