@@ -255,6 +255,113 @@
     100% { transform: scale(1); }
 }
 
+/* Results section styling for better contrast */
+.results-card {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff !important;
+}
+
+.results-card .card-title,
+.results-card h1, .results-card h2, .results-card h3, 
+.results-card h4, .results-card h5, .results-card h6 {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.results-card .text-muted {
+    color: #cbd5e0 !important;
+    opacity: 0.9;
+}
+
+.results-card small {
+    color: #e2e8f0 !important;
+    opacity: 0.8;
+}
+
+/* Key metrics cards with enhanced contrast */
+.metric-card-primary {
+    background: linear-gradient(135deg, #6c5ce7 0%, #5a4fcf 100%) !important;
+    border: none;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card-success {
+    background: linear-gradient(135deg, #00b894 0%, #00a085 100%) !important;
+    border: none;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card-warning {
+    background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%) !important;
+    border: none;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card-info {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%) !important;
+    border: none;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Asset breakdown enhanced styling */
+#advanced-breakdown .card,
+#social-security-info .card,
+#spouse-info .card,
+#four01k-breakdown .card {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff !important;
+}
+
+#advanced-breakdown .card-title,
+#social-security-info .card-title,
+#spouse-info .card-title,
+#four01k-breakdown .card-title {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+#advanced-breakdown .text-muted,
+#social-security-info .text-muted,
+#spouse-info .text-muted,
+#four01k-breakdown .text-muted {
+    color: #cbd5e0 !important;
+}
+
+#advanced-breakdown h4, #advanced-breakdown h6,
+#social-security-info h4, #social-security-info h6,
+#spouse-info h4, #spouse-info h6,
+#four01k-breakdown h4, #four01k-breakdown h6 {
+    color: #ffffff !important;
+}
+
+/* Status indicators with better contrast */
+#status-indicators .alert-success {
+    background-color: rgba(0, 184, 148, 0.2) !important;
+    border-left-color: var(--fire-success);
+    color: #ffffff !important;
+    border: 1px solid rgba(0, 184, 148, 0.3);
+}
+
+#status-indicators .alert-warning {
+    background-color: rgba(253, 203, 110, 0.2) !important;
+    border-left-color: var(--fire-warning);
+    color: #ffffff !important;
+    border: 1px solid rgba(253, 203, 110, 0.3);
+}
+
+#status-indicators .alert-info {
+    background-color: rgba(116, 185, 255, 0.2) !important;
+    border-left-color: var(--fire-info);
+    color: #ffffff !important;
+    border: 1px solid rgba(116, 185, 255, 0.3);
+}
+
 /* Footer styling */
 footer {
     margin-top: auto;
