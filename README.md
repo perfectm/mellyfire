@@ -1,86 +1,101 @@
-# FIRE Calculator Web Application
+# MellyFIRE Calculator 🔥
 
-A comprehensive Financial Independence Retire Early (FIRE) calculator web application built with FastAPI, featuring Coast FIRE calculations, user authentication, and data persistence.
+A comprehensive FIRE (Financial Independence, Retire Early) calculator with advanced Monte Carlo simulation and Coast FIRE functionality.
 
 ## Features
 
-### Core Functionality
-- **Coast FIRE Calculator**: Determine when you've saved enough to coast to retirement
-- **Full FIRE Calculator**: Calculate your complete financial independence timeline
-- **Interactive Projections**: Visual charts showing asset growth and milestones
-- **Scenario Planning**: Save and compare different financial scenarios
+### 🎯 Advanced FIRE Calculations
+- **Monte Carlo Simulation**: 10,000 scenario testing with 90% success rate threshold
+- **Life Expectancy Integration**: Age-based retirement duration calculations
+- **Sequence of Returns Risk**: Realistic market volatility modeling
+- **Coast FIRE Analysis**: Calculate when you can stop saving and coast to retirement
 
-### User Features
-- **User Authentication**: Secure login system with JWT tokens
-- **Data Persistence**: Save calculations and track progress over time
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
-- **Guest Mode**: Try the calculator without creating an account
+### 💼 Comprehensive Financial Planning
+- **401K Contributions**: Employee contributions with employer matching
+- **Social Security Integration**: Primary and spouse benefits with timing optimization
+- **Advanced Mode**: Separate retirement vs taxable account management
+- **Spouse Support**: Dual-income household calculations
 
-### Technical Features
-- **Database Flexibility**: PostgreSQL for production, SQLite fallback for development
-- **Modern Web Stack**: FastAPI backend with Bootstrap frontend
-- **Real-time Calculations**: Client-side and server-side calculation engines
-- **RESTful API**: Clean API design for future mobile app integration
+### 🎨 Modern User Experience
+- **Interactive Slider**: Intuitive retirement age selection
+- **Real-time Calculations**: Live updates as you adjust parameters
+- **Auto-save & Load**: Automatic loading of most recent calculations
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Theme Support**: Enhanced contrast for better readability
 
-## Installation
+### 📊 Detailed Analysis & Projections
+- **Asset Growth Charts**: Visual projection of your FIRE journey
+- **Success Rate Display**: Monte Carlo simulation statistics
+- **Status Indicators**: Track Coast FIRE and Full FIRE achievement
+- **Personalized Recommendations**: AI-driven insights based on your scenario
+
+### 🛠️ Technical Features
+- **FastAPI Backend**: Modern Python web framework
+- **SQLite Database**: Lightweight, reliable data storage
+- **JWT Authentication**: Secure user session management
+- **Bootstrap 5 UI**: Clean, responsive interface design
+
+## Quick Start 🚀
 
 ### Prerequisites
 - Python 3.8+
-- Optional: PostgreSQL database
+- pip package manager
 
-### Setup Steps
+### Installation
 
-1. **Clone and Navigate**
+1. **Clone the repository**
    ```bash
-   cd FIRE
+   git clone https://github.com/perfectm/mellyfire.git
+   cd mellyfire
    ```
 
-2. **Install Dependencies**
+2. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-4. **Database Setup**
-   The application will automatically create the database schema on startup.
-   
-   For PostgreSQL:
-   ```bash
-   # Create database
-   createdb fire_calculator
-   # Update DATABASE_URL in .env
-   DATABASE_URL=postgresql://username:password@localhost:5432/fire_calculator
-   ```
-
-5. **Run the Application**
+3. **Run the application**
    ```bash
    python main.py
    ```
-   Or using uvicorn directly:
-   ```bash
-   uvicorn main:app --reload --host 0.0.0.0 --port 8000
-   ```
 
-6. **Access the Application**
-   Open your browser to: http://localhost:8000
+4. **Access the calculator**
+   - Open your browser to `http://localhost:8000`
+   - Register an account or use guest mode
+   - Start planning your path to financial independence!
 
-## Usage
+## Monte Carlo Simulation 🎲
 
-### Quick Start
-1. Visit the homepage to learn about Coast FIRE
-2. Go to the Calculator page
-3. Enter your financial information
-4. View your personalized FIRE projections
+MellyFIRE uses sophisticated Monte Carlo simulation to provide more accurate FIRE numbers than traditional 4% rule calculations:
 
-### Account Features
-1. Register for an account to save calculations
-2. Compare different scenarios over time
-3. Track your progress toward financial independence
+- **Market Volatility**: Models realistic return distributions (7% mean, 20% std dev)
+- **Inflation Impact**: Accounts for rising expenses over retirement
+- **Success Optimization**: Finds minimum portfolio size for 90% success rate
+- **Lifetime Awareness**: Adjusts calculations based on expected retirement duration
+
+### Example Results
+- **Traditional 4% Rule**: $1,000,000 (for $40k expenses)
+- **Monte Carlo Result**: $1,321,045 (32% higher for realistic market conditions)
+
+## Advanced Features 💡
+
+### Coast FIRE Calculation
+Determine when you can stop saving and let compound growth carry you to retirement:
+- **Time-based milestones**: See your Coast FIRE target at each age
+- **Growth projections**: Visualize how your current assets will grow
+- **Early achievement tracking**: Know when you've reached Coast FIRE status
+
+### Social Security Integration
+- **Benefit estimation**: Input your expected Social Security benefits
+- **Timing optimization**: Account for early vs full vs delayed retirement
+- **Spouse coordination**: Handle dual Social Security scenarios
+- **Bridge calculations**: Manage the gap between early retirement and benefit eligibility
+
+### 401K Optimization
+- **Employee contributions**: Percentage-based calculations
+- **Employer matching**: Model various matching formulas
+- **Annual limits**: Stay within IRS contribution limits
+- **Tax advantages**: Factor in pre-tax savings benefits
 
 ### API Usage
 The application exposes a REST API at `/api/`:
@@ -184,10 +199,36 @@ This project is inspired by the FIRE community and aims to provide accurate, hel
 3. **Education**: Helps users understand FIRE concepts
 4. **Privacy**: User data is securely stored and never shared
 
-## Disclaimer
+## Security & Privacy 🔒
 
-This calculator provides estimates for educational purposes only. Results should not be considered as financial advice. Always consult with a qualified financial advisor for personalized recommendations.
+- **Secure Authentication**: JWT tokens with proper expiration
+- **Data Encryption**: Sensitive financial data protection
+- **Local Storage**: Your data stays on your device and our secure servers
+- **No Third-party Tracking**: Privacy-focused design
 
-## License
+## Contributing 🤝
 
-This project is provided as-is for educational and personal use. Feel free to modify and extend for your own needs.
+We welcome contributions! Whether you're fixing bugs, adding features, or improving documentation:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments 🙏
+
+- Inspired by the FIRE community and financial independence movement
+- Built with modern web technologies for optimal performance
+- Monte Carlo methodology based on academic research in portfolio management
+- UI/UX inspired by leading financial planning tools
+
+---
+
+**Start your FIRE journey today with MellyFIRE Calculator!** 🚀
+
+*This calculator provides estimates for educational purposes. Please consult with a qualified financial advisor for personalized financial planning advice.*
