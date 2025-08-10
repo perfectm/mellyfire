@@ -182,7 +182,12 @@ async def calculate_fire(
     db_calculation = FireCalculation(
         user_id=current_user.id,
         **calculation.dict(),
-        **results
+        fire_number=results['fire_number'],
+        coast_fire_number=results['coast_fire_number'],
+        years_to_fire=results['years_to_fire'],
+        years_to_coast_fire=results['years_to_coast_fire'],
+        coast_fire_age=results['coast_fire_age'],
+        projection_data=results['projection_data']
     )
     db.add(db_calculation)
     db.commit()
@@ -191,7 +196,12 @@ async def calculate_fire(
     return FireCalculationResponse(
         id=db_calculation.id,
         **calculation.dict(),
-        **results,
+        fire_number=results['fire_number'],
+        coast_fire_number=results['coast_fire_number'],
+        years_to_fire=results['years_to_fire'],
+        years_to_coast_fire=results['years_to_coast_fire'],
+        coast_fire_age=results['coast_fire_age'],
+        projection_data=results['projection_data'],
         created_at=db_calculation.created_at
     )
 
@@ -217,6 +227,25 @@ async def get_user_calculations(
             investment_return_rate=calc.investment_return_rate,
             inflation_rate=calc.inflation_rate,
             safe_withdrawal_rate=calc.safe_withdrawal_rate,
+            # Advanced mode parameters
+            advanced_mode=calc.advanced_mode,
+            retirement_accounts=calc.retirement_accounts,
+            taxable_accounts=calc.taxable_accounts,
+            retirement_account_return_rate=calc.retirement_account_return_rate,
+            # Social Security parameters
+            social_security_enabled=calc.social_security_enabled,
+            social_security_start_age=calc.social_security_start_age,
+            social_security_monthly_benefit=calc.social_security_monthly_benefit,
+            # Spouse parameters
+            spouse_enabled=calc.spouse_enabled,
+            spouse_age=calc.spouse_age,
+            spouse_social_security_enabled=calc.spouse_social_security_enabled,
+            spouse_social_security_start_age=calc.spouse_social_security_start_age,
+            spouse_social_security_monthly_benefit=calc.spouse_social_security_monthly_benefit,
+            # 401K parameters
+            contribution_401k_percentage=calc.contribution_401k_percentage,
+            employer_match_percentage=calc.employer_match_percentage,
+            # Results
             fire_number=calc.fire_number,
             coast_fire_number=calc.coast_fire_number,
             years_to_fire=calc.years_to_fire,
