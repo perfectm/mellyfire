@@ -20,11 +20,19 @@ class FireCalculator:
         retirement_expenses: float,
         investment_return_rate: float = 0.07,
         inflation_rate: float = 0.03,
-        safe_withdrawal_rate: float = 0.04
+        safe_withdrawal_rate: float = 0.04,
+        # Advanced mode parameters
+        advanced_mode: bool = False,
+        retirement_accounts: float = 0.0,
+        taxable_accounts: float = 0.0,
+        retirement_account_return_rate: float = 0.07,
+        # Social Security parameters
+        social_security_enabled: bool = False,
+        social_security_start_age: int = 65,
+        social_security_monthly_benefit: float = 0.0
     ):
         self.current_age = current_age
         self.retirement_age = retirement_age
-        self.current_assets = current_assets
         self.monthly_income = monthly_income
         self.monthly_expenses = monthly_expenses
         self.monthly_savings = monthly_savings
@@ -32,6 +40,25 @@ class FireCalculator:
         self.investment_return_rate = investment_return_rate
         self.inflation_rate = inflation_rate
         self.safe_withdrawal_rate = safe_withdrawal_rate
+        
+        # Advanced mode setup
+        self.advanced_mode = advanced_mode
+        if advanced_mode:
+            self.retirement_accounts = retirement_accounts
+            self.taxable_accounts = taxable_accounts
+            self.current_assets = retirement_accounts + taxable_accounts  # Total assets
+            self.retirement_account_return_rate = retirement_account_return_rate
+        else:
+            self.current_assets = current_assets
+            self.retirement_accounts = 0.0
+            self.taxable_accounts = current_assets
+            self.retirement_account_return_rate = investment_return_rate
+        
+        # Social Security setup
+        self.social_security_enabled = social_security_enabled
+        self.social_security_start_age = social_security_start_age
+        self.social_security_monthly_benefit = social_security_monthly_benefit
+        self.social_security_annual_benefit = social_security_monthly_benefit * 12
         
         # Calculated properties
         self.years_to_retirement = retirement_age - current_age
@@ -42,8 +69,14 @@ class FireCalculator:
         """
         Calculate the FIRE number - amount needed for full retirement
         Using the 4% rule (or user-specified safe withdrawal rate)
+        Accounts for Social Security benefits if enabled
         """
-        return self.retirement_expenses / self.safe_withdrawal_rate
+        if self.social_security_enabled:
+            # Reduce expenses by Social Security benefits
+            net_retirement_expenses = max(0, self.retirement_expenses - self.social_security_annual_benefit)
+            return net_retirement_expenses / self.safe_withdrawal_rate
+        else:
+            return self.retirement_expenses / self.safe_withdrawal_rate
     
     def calculate_coast_fire_number(self) -> float:
         """
@@ -121,33 +154,85 @@ class FireCalculator:
     
     def project_assets_over_time(self) -> pd.DataFrame:
         """
-        Project asset growth over time, similar to the original notebook logic
+        Project asset growth over time with advanced mode support
         Returns a DataFrame with year-by-year projections
         """
         years = range(self.years_to_project + 1)
         data = []
         
-        current_assets = self.current_assets
+        # Initialize assets
+        if self.advanced_mode:
+            current_retirement_accounts = self.retirement_accounts
+            current_taxable_accounts = self.taxable_accounts
+            current_assets = current_retirement_accounts + current_taxable_accounts
+        else:
+            current_retirement_accounts = 0.0
+            current_taxable_accounts = self.current_assets
+            current_assets = self.current_assets
+        
         current_expenses = self.retirement_expenses
         age = self.current_age
         
         for year in years:
-            # Calculate asset growth
             if age < self.retirement_age:
                 # Still working and saving
-                asset_growth = current_assets * self.investment_return_rate
-                new_assets = current_assets + asset_growth + self.annual_savings
+                if self.advanced_mode:
+                    # Grow retirement and taxable accounts separately
+                    retirement_growth = current_retirement_accounts * self.retirement_account_return_rate
+                    taxable_growth = current_taxable_accounts * self.investment_return_rate
+                    
+                    # Assume savings split equally between retirement and taxable (could be made configurable)
+                    retirement_contribution = self.annual_savings * 0.5
+                    taxable_contribution = self.annual_savings * 0.5
+                    
+                    current_retirement_accounts += retirement_growth + retirement_contribution
+                    current_taxable_accounts += taxable_growth + taxable_contribution
+                    current_assets = current_retirement_accounts + current_taxable_accounts
+                else:
+                    # Simple growth
+                    asset_growth = current_assets * self.investment_return_rate
+                    current_assets = current_assets + asset_growth + self.annual_savings
+                
             else:
-                # Retired, withdrawing from assets
-                asset_growth = current_assets * self.investment_return_rate
+                # Retired, need to withdraw from assets
                 inflation_adjusted_expenses = current_expenses * ((1 + self.inflation_rate) ** (age - self.retirement_age))
                 
-                # Special logic for Social Security (similar to notebook)
-                if age == 66:
-                    inflation_adjusted_expenses = max(0, inflation_adjusted_expenses - 46524)
+                # Apply Social Security benefits if enabled and age appropriate
+                net_expenses = inflation_adjusted_expenses
+                social_security_benefit = 0
+                if self.social_security_enabled and age >= self.social_security_start_age:
+                    social_security_benefit = self.social_security_annual_benefit
+                    net_expenses = max(0, inflation_adjusted_expenses - social_security_benefit)
                 
-                new_assets = current_assets + asset_growth - inflation_adjusted_expenses
-                current_expenses = inflation_adjusted_expenses
+                if self.advanced_mode:
+                    # Grow accounts
+                    retirement_growth = current_retirement_accounts * self.retirement_account_return_rate
+                    taxable_growth = current_taxable_accounts * self.investment_return_rate
+                    current_retirement_accounts += retirement_growth
+                    current_taxable_accounts += taxable_growth
+                    
+                    # Withdrawal strategy: taxable first until age 65, then retirement accounts
+                    if age < 65:
+                        # Can only withdraw from taxable accounts
+                        current_taxable_accounts = max(0, current_taxable_accounts - net_expenses)
+                    else:
+                        # Can withdraw from retirement accounts
+                        if current_taxable_accounts >= net_expenses:
+                            # Use taxable first if available
+                            current_taxable_accounts -= net_expenses
+                        else:
+                            # Use taxable then retirement
+                            remaining_needed = net_expenses - current_taxable_accounts
+                            current_taxable_accounts = 0
+                            current_retirement_accounts = max(0, current_retirement_accounts - remaining_needed)
+                    
+                    current_assets = current_retirement_accounts + current_taxable_accounts
+                else:
+                    # Simple withdrawal
+                    asset_growth = current_assets * self.investment_return_rate
+                    current_assets = current_assets + asset_growth - net_expenses
+                
+                current_expenses = net_expenses + social_security_benefit  # Total expenses covered
             
             # Coast FIRE milestone for this age
             years_left_to_retirement = max(0, self.retirement_age - age)
@@ -157,22 +242,30 @@ class FireCalculator:
             else:
                 coast_fire_milestone = self.calculate_fire_number()
             
+            # Calculate accessible assets (for early retirement scenarios)
+            if self.advanced_mode and age < 65:
+                accessible_assets = current_taxable_accounts  # Only taxable accessible before 65
+            else:
+                accessible_assets = current_assets  # All assets accessible
+            
             data.append({
                 'age': age,
                 'year': year,
-                'assets': current_assets,
-                'asset_growth': asset_growth if 'asset_growth' in locals() else 0,
+                'total_assets': current_assets,
+                'retirement_accounts': current_retirement_accounts if self.advanced_mode else 0,
+                'taxable_accounts': current_taxable_accounts if self.advanced_mode else current_assets,
+                'accessible_assets': accessible_assets,
                 'expenses': current_expenses if age >= self.retirement_age else self.monthly_expenses * 12,
+                'social_security_benefit': social_security_benefit if age >= self.retirement_age else 0,
                 'coast_fire_milestone': coast_fire_milestone,
-                'achieved_coast_fire': current_assets >= coast_fire_milestone,
-                'achieved_fire': current_assets >= self.calculate_fire_number()
+                'achieved_coast_fire': accessible_assets >= coast_fire_milestone,
+                'achieved_fire': accessible_assets >= self.calculate_fire_number()
             })
             
-            current_assets = new_assets
             age += 1
             
-            # Stop if assets go negative
-            if current_assets < 0:
+            # Stop if total assets go negative or we can't meet expenses
+            if current_assets <= 0 or (age >= self.retirement_age and accessible_assets <= 0 and not self.social_security_enabled):
                 break
         
         return pd.DataFrame(data)
@@ -196,7 +289,11 @@ class FireCalculator:
         projection_data = {
             'years': projection_df['year'].tolist(),
             'ages': projection_df['age'].tolist(),
-            'assets': projection_df['assets'].tolist(),
+            'total_assets': projection_df['total_assets'].tolist(),
+            'retirement_accounts': projection_df['retirement_accounts'].tolist() if self.advanced_mode else [],
+            'taxable_accounts': projection_df['taxable_accounts'].tolist(),
+            'accessible_assets': projection_df['accessible_assets'].tolist(),
+            'social_security_benefits': projection_df['social_security_benefit'].tolist() if self.social_security_enabled else [],
             'coast_fire_milestones': projection_df['coast_fire_milestone'].tolist(),
             'achieved_coast_fire': projection_df['achieved_coast_fire'].tolist(),
             'achieved_fire': projection_df['achieved_fire'].tolist()

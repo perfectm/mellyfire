@@ -17,11 +17,71 @@ class FireCalculator {
             
             // Add number formatting to financial input fields
             this.initializeNumberFormatting();
+            
+            // Initialize advanced mode and Social Security toggles
+            this.initializeToggleHandlers();
         }
 
         const saveButton = document.getElementById('save-calculation');
         if (saveButton) {
             saveButton.addEventListener('click', () => this.saveCalculation());
+        }
+    }
+
+    initializeToggleHandlers() {
+        // Advanced mode toggle
+        const advancedToggle = document.getElementById('advanced_mode');
+        if (advancedToggle) {
+            advancedToggle.addEventListener('change', (e) => this.toggleAdvancedMode(e.target.checked));
+        }
+        
+        // Social Security toggle
+        const socialSecurityToggle = document.getElementById('social_security_enabled');
+        if (socialSecurityToggle) {
+            socialSecurityToggle.addEventListener('change', (e) => this.toggleSocialSecurity(e.target.checked));
+        }
+    }
+
+    toggleAdvancedMode(enabled) {
+        const basicAssets = document.getElementById('basic-assets');
+        const advancedAssets = document.getElementById('advanced-assets');
+        const advancedBreakdown = document.getElementById('advanced-breakdown');
+        
+        if (enabled) {
+            basicAssets.classList.add('d-none');
+            advancedAssets.classList.remove('d-none');
+            if (advancedBreakdown) advancedBreakdown.classList.remove('d-none');
+            
+            // Copy current assets value to the two separate fields
+            const currentAssetsValue = document.getElementById('current_assets').value.replace(/,/g, '');
+            const totalAssets = parseFloat(currentAssetsValue) || 100000;
+            
+            // Split 60/40 between retirement/taxable as default
+            document.getElementById('retirement_accounts').value = this.formatNumberWithCommas(totalAssets * 0.6);
+            document.getElementById('taxable_accounts').value = this.formatNumberWithCommas(totalAssets * 0.4);
+        } else {
+            basicAssets.classList.remove('d-none');
+            advancedAssets.classList.add('d-none');
+            if (advancedBreakdown) advancedBreakdown.classList.add('d-none');
+            
+            // Combine the two separate fields back into current assets
+            const retirementValue = parseFloat(document.getElementById('retirement_accounts').value.replace(/,/g, '') || '0');
+            const taxableValue = parseFloat(document.getElementById('taxable_accounts').value.replace(/,/g, '') || '0');
+            
+            document.getElementById('current_assets').value = this.formatNumberWithCommas(retirementValue + taxableValue);
+        }
+    }
+
+    toggleSocialSecurity(enabled) {
+        const socialSecurityOptions = document.getElementById('social-security-options');
+        const socialSecurityInfo = document.getElementById('social-security-info');
+        
+        if (enabled) {
+            socialSecurityOptions.classList.remove('d-none');
+            if (socialSecurityInfo) socialSecurityInfo.classList.remove('d-none');
+        } else {
+            socialSecurityOptions.classList.add('d-none');
+            if (socialSecurityInfo) socialSecurityInfo.classList.add('d-none');
         }
     }
 
@@ -32,7 +92,10 @@ class FireCalculator {
             'monthly_income', 
             'monthly_expenses',
             'monthly_savings',
-            'retirement_expenses'
+            'retirement_expenses',
+            'retirement_accounts',
+            'taxable_accounts',
+            'social_security_monthly_benefit'
         ];
 
         financialFields.forEach(fieldId => {
@@ -107,6 +170,9 @@ class FireCalculator {
             return parseFloat(String(value).replace(/,/g, '') || '0');
         };
         
+        const advancedMode = formData.get('advanced_mode') === 'on';
+        const socialSecurityEnabled = formData.get('social_security_enabled') === 'on';
+        
         return {
             current_age: parseInt(formData.get('current_age')),
             retirement_age: parseInt(formData.get('retirement_age')),
@@ -117,7 +183,18 @@ class FireCalculator {
             retirement_expenses: parseNumber(formData.get('retirement_expenses')),
             investment_return_rate: parseFloat(formData.get('investment_return_rate')),
             inflation_rate: parseFloat(formData.get('inflation_rate')),
-            safe_withdrawal_rate: parseFloat(formData.get('safe_withdrawal_rate'))
+            safe_withdrawal_rate: parseFloat(formData.get('safe_withdrawal_rate')),
+            
+            // Advanced mode parameters
+            advanced_mode: advancedMode,
+            retirement_accounts: advancedMode ? parseNumber(formData.get('retirement_accounts')) : 0,
+            taxable_accounts: advancedMode ? parseNumber(formData.get('taxable_accounts')) : 0,
+            retirement_account_return_rate: advancedMode ? parseFloat(formData.get('retirement_account_return_rate') || '7') : 7,
+            
+            // Social Security parameters
+            social_security_enabled: socialSecurityEnabled,
+            social_security_start_age: socialSecurityEnabled ? parseInt(formData.get('social_security_start_age') || '65') : 65,
+            social_security_monthly_benefit: socialSecurityEnabled ? parseNumber(formData.get('social_security_monthly_benefit')) : 0
         };
     }
 
@@ -280,6 +357,12 @@ class FireCalculator {
             document.getElementById('coast-fire-age').textContent = 'Now!';
         }
         
+        // Update advanced mode displays
+        this.updateAdvancedModeDisplays(results);
+        
+        // Update Social Security displays
+        this.updateSocialSecurityDisplays(results);
+        
         // Update status indicators
         this.updateStatusIndicators(results);
         
@@ -288,6 +371,43 @@ class FireCalculator {
         
         // Update analysis
         this.updateAnalysis(results);
+    }
+
+    updateAdvancedModeDisplays(results) {
+        const data = this.getFormData();
+        
+        if (data.advanced_mode) {
+            // Show current asset breakdown
+            const currentRetirementEl = document.getElementById('current-retirement-accounts');
+            const currentTaxableEl = document.getElementById('current-taxable-accounts');
+            const totalAssetsEl = document.getElementById('total-assets');
+            
+            if (currentRetirementEl) {
+                currentRetirementEl.textContent = this.formatCurrency(data.retirement_accounts);
+            }
+            if (currentTaxableEl) {
+                currentTaxableEl.textContent = this.formatCurrency(data.taxable_accounts);
+            }
+            if (totalAssetsEl) {
+                totalAssetsEl.textContent = this.formatCurrency(data.retirement_accounts + data.taxable_accounts);
+            }
+        }
+    }
+
+    updateSocialSecurityDisplays(results) {
+        const data = this.getFormData();
+        
+        if (data.social_security_enabled) {
+            const monthlyBenefitEl = document.getElementById('ss-monthly-benefit');
+            const startAgeEl = document.getElementById('ss-start-age');
+            
+            if (monthlyBenefitEl) {
+                monthlyBenefitEl.textContent = this.formatCurrency(data.social_security_monthly_benefit);
+            }
+            if (startAgeEl) {
+                startAgeEl.textContent = data.social_security_start_age;
+            }
+        }
     }
 
     updateStatusIndicators(results) {

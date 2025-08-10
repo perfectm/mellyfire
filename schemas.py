@@ -31,6 +31,17 @@ class FireCalculationCreate(BaseModel):
     investment_return_rate: float = Field(7.0, ge=0, le=20, description="Annual investment return rate (%)")
     inflation_rate: float = Field(3.0, ge=0, le=10, description="Annual inflation rate (%)")
     safe_withdrawal_rate: float = Field(4.0, ge=2, le=8, description="Safe withdrawal rate (%)")
+    
+    # Advanced mode parameters
+    advanced_mode: bool = Field(False, description="Enable advanced mode with retirement account separation")
+    retirement_accounts: Optional[float] = Field(0, ge=0, description="Amount in retirement accounts ($)")
+    taxable_accounts: Optional[float] = Field(0, ge=0, description="Amount in taxable accounts ($)")
+    retirement_account_return_rate: Optional[float] = Field(7.0, ge=0, le=20, description="Retirement account return rate (%)")
+    
+    # Social Security parameters
+    social_security_enabled: bool = Field(False, description="Include Social Security benefits")
+    social_security_start_age: Optional[int] = Field(65, ge=62, le=70, description="Age to start Social Security")
+    social_security_monthly_benefit: Optional[float] = Field(0, ge=0, description="Estimated monthly Social Security benefit ($)")
 
     def validate_retirement_age(self):
         if self.retirement_age <= self.current_age:
@@ -49,6 +60,17 @@ class FireCalculationResponse(BaseModel):
     investment_return_rate: float
     inflation_rate: float
     safe_withdrawal_rate: float
+    
+    # Advanced mode parameters
+    advanced_mode: bool
+    retirement_accounts: Optional[float]
+    taxable_accounts: Optional[float]
+    retirement_account_return_rate: Optional[float]
+    
+    # Social Security parameters
+    social_security_enabled: bool
+    social_security_start_age: Optional[int]
+    social_security_monthly_benefit: Optional[float]
     
     # Calculated results
     fire_number: float

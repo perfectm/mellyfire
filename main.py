@@ -155,7 +155,16 @@ async def calculate_fire(
         retirement_expenses=calculation.retirement_expenses,
         investment_return_rate=calculation.investment_return_rate / 100,
         inflation_rate=calculation.inflation_rate / 100,
-        safe_withdrawal_rate=calculation.safe_withdrawal_rate / 100
+        safe_withdrawal_rate=calculation.safe_withdrawal_rate / 100,
+        # Advanced mode parameters
+        advanced_mode=calculation.advanced_mode,
+        retirement_accounts=calculation.retirement_accounts or 0,
+        taxable_accounts=calculation.taxable_accounts or 0,
+        retirement_account_return_rate=(calculation.retirement_account_return_rate or 7.0) / 100,
+        # Social Security parameters
+        social_security_enabled=calculation.social_security_enabled,
+        social_security_start_age=calculation.social_security_start_age or 65,
+        social_security_monthly_benefit=calculation.social_security_monthly_benefit or 0
     )
     
     results = calculator.calculate_all()

@@ -35,6 +35,17 @@ class FireCalculation(Base):
     inflation_rate = Column(Float, nullable=False)
     safe_withdrawal_rate = Column(Float, nullable=False)
     
+    # Advanced mode parameters
+    advanced_mode = Column(Integer, default=0, nullable=False)  # 0 = basic, 1 = advanced
+    retirement_accounts = Column(Float, default=0, nullable=True)
+    taxable_accounts = Column(Float, default=0, nullable=True)
+    retirement_account_return_rate = Column(Float, default=0.07, nullable=True)
+    
+    # Social Security parameters
+    social_security_enabled = Column(Integer, default=0, nullable=False)  # 0 = disabled, 1 = enabled
+    social_security_start_age = Column(Integer, default=65, nullable=True)
+    social_security_monthly_benefit = Column(Float, default=0, nullable=True)
+    
     # Calculated results
     fire_number = Column(Float, nullable=False)
     coast_fire_number = Column(Float, nullable=False)
