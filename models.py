@@ -46,6 +46,13 @@ class FireCalculation(Base):
     social_security_start_age = Column(Integer, default=65, nullable=True)
     social_security_monthly_benefit = Column(Float, default=0, nullable=True)
     
+    # Spouse parameters
+    spouse_enabled = Column(Integer, default=0, nullable=False)  # 0 = single, 1 = married
+    spouse_age = Column(Integer, default=0, nullable=True)
+    spouse_social_security_enabled = Column(Integer, default=0, nullable=False)
+    spouse_social_security_start_age = Column(Integer, default=65, nullable=True)
+    spouse_social_security_monthly_benefit = Column(Float, default=0, nullable=True)
+    
     # Calculated results
     fire_number = Column(Float, nullable=False)
     coast_fire_number = Column(Float, nullable=False)

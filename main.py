@@ -164,7 +164,13 @@ async def calculate_fire(
         # Social Security parameters
         social_security_enabled=calculation.social_security_enabled,
         social_security_start_age=calculation.social_security_start_age or 65,
-        social_security_monthly_benefit=calculation.social_security_monthly_benefit or 0
+        social_security_monthly_benefit=calculation.social_security_monthly_benefit or 0,
+        # Spouse parameters
+        spouse_enabled=calculation.spouse_enabled,
+        spouse_age=calculation.spouse_age or 30,
+        spouse_social_security_enabled=calculation.spouse_social_security_enabled,
+        spouse_social_security_start_age=calculation.spouse_social_security_start_age or 65,
+        spouse_social_security_monthly_benefit=calculation.spouse_social_security_monthly_benefit or 0
     )
     
     results = calculator.calculate_all()

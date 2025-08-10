@@ -154,6 +154,62 @@
                             </div>
                         </div>
 
+                        <!-- Spouse Section -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="spouse_enabled" name="spouse_enabled">
+                                <label class="form-check-label fw-bold text-info" for="spouse_enabled">
+                                    <i class="fas fa-heart"></i> Include Spouse
+                                </label>
+                                <div class="form-text">Assets above should include both yours and your spouse's combined assets</div>
+                            </div>
+                            
+                            <div id="spouse-options" class="d-none">
+                                <div class="mb-3">
+                                    <label for="spouse_age" class="form-label">Spouse Current Age</label>
+                                    <input type="number" class="form-control" id="spouse_age" name="spouse_age" 
+                                           min="18" max="100" value="28">
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="spouse_social_security_enabled" name="spouse_social_security_enabled">
+                                    <label class="form-check-label fw-bold text-success" for="spouse_social_security_enabled">
+                                        <i class="fas fa-landmark"></i> Spouse Social Security
+                                    </label>
+                                </div>
+                                
+                                <div id="spouse-social-security-options" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="spouse_social_security_start_age" class="form-label">
+                                                Spouse SS Start Age
+                                            </label>
+                                            <select class="form-select" id="spouse_social_security_start_age" name="spouse_social_security_start_age">
+                                                <option value="62">62 (Early, Reduced Benefits)</option>
+                                                <option value="65" selected>65 (Full Benefits)</option>
+                                                <option value="67">67 (Full Benefits for Born 1960+)</option>
+                                                <option value="70">70 (Maximum Benefits)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="spouse_social_security_monthly_benefit" class="form-label">
+                                                Spouse Monthly Benefit ($)
+                                            </label>
+                                            <input type="text" class="form-control" id="spouse_social_security_monthly_benefit" name="spouse_social_security_monthly_benefit" 
+                                                   value="1,600">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-2 text-center">
+                                        <a href="https://www.ssa.gov/OACT/quickcalc/" target="_blank" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-external-link-alt"></i> 
+                                            Calculate Spouse SS on SSA.gov
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Assumptions -->
                         <div class="mb-4">
                             <h6 class="text-primary fw-bold mb-3">Assumptions</h6>
@@ -284,17 +340,59 @@
                                     <i class="fas fa-landmark"></i> Social Security Benefits
                                 </h5>
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted">Monthly Benefit</h6>
+                                    <div class="col-md-3">
+                                        <h6 class="text-muted">Your Monthly Benefit</h6>
                                         <h4 id="ss-monthly-benefit" class="text-success">$0</h4>
+                                        <small class="text-muted">Starting at age <span id="ss-start-age">65</span></small>
                                     </div>
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted">Starting Age</h6>
-                                        <h4 id="ss-start-age" class="text-info">65</h4>
+                                    <div id="spouse-ss-display" class="col-md-3 d-none">
+                                        <h6 class="text-muted">Spouse Monthly Benefit</h6>
+                                        <h4 id="spouse-ss-monthly-benefit" class="text-success">$0</h4>
+                                        <small class="text-muted">Starting at age <span id="spouse-ss-start-age">65</span></small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="text-muted">Combined Annual</h6>
+                                        <h4 id="total-ss-annual-benefit" class="text-primary">$0</h4>
+                                        <small class="text-muted">When both active</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="text-muted">FIRE Reduction</h6>
+                                        <h4 id="fire-reduction-amount" class="text-warning">$0</h4>
+                                        <small class="text-muted">Less needed to invest</small>
                                     </div>
                                 </div>
-                                <p class="text-muted mb-0">
-                                    <small>This reduces your required FIRE number by covering some retirement expenses.</small>
+                                <p class="text-muted mb-0 mt-2">
+                                    <small><i class="fas fa-info-circle"></i> Social Security benefits reduce your required FIRE number by covering retirement expenses.</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spouse Info -->
+                <div id="spouse-info" class="row mb-4 d-none">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-heart"></i> Spouse Information
+                                </h5>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted">Spouse Current Age</h6>
+                                        <h4 id="spouse-current-age" class="text-info">28</h4>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted">Age Gap</h6>
+                                        <h4 id="age-gap" class="text-muted">2 years younger</h4>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted">Assets Included</h6>
+                                        <p class="text-success mb-0"><i class="fas fa-check"></i> Combined assets</p>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-0 mt-2">
+                                    <small><i class="fas fa-info-circle"></i> Asset amounts above include both your and your spouse's combined investments.</small>
                                 </p>
                             </div>
                         </div>

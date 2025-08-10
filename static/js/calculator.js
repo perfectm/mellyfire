@@ -40,6 +40,18 @@ class FireCalculator {
         if (socialSecurityToggle) {
             socialSecurityToggle.addEventListener('change', (e) => this.toggleSocialSecurity(e.target.checked));
         }
+        
+        // Spouse toggle
+        const spouseToggle = document.getElementById('spouse_enabled');
+        if (spouseToggle) {
+            spouseToggle.addEventListener('change', (e) => this.toggleSpouse(e.target.checked));
+        }
+        
+        // Spouse Social Security toggle
+        const spouseSocialSecurityToggle = document.getElementById('spouse_social_security_enabled');
+        if (spouseSocialSecurityToggle) {
+            spouseSocialSecurityToggle.addEventListener('change', (e) => this.toggleSpouseSocialSecurity(e.target.checked));
+        }
     }
 
     toggleAdvancedMode(enabled) {
@@ -85,6 +97,36 @@ class FireCalculator {
         }
     }
 
+    toggleSpouse(enabled) {
+        const spouseOptions = document.getElementById('spouse-options');
+        const spouseInfo = document.getElementById('spouse-info');
+        
+        if (enabled) {
+            spouseOptions.classList.remove('d-none');
+            if (spouseInfo) spouseInfo.classList.remove('d-none');
+        } else {
+            spouseOptions.classList.add('d-none');
+            if (spouseInfo) spouseInfo.classList.add('d-none');
+            
+            // Also hide spouse Social Security if spouse is disabled
+            document.getElementById('spouse_social_security_enabled').checked = false;
+            this.toggleSpouseSocialSecurity(false);
+        }
+    }
+
+    toggleSpouseSocialSecurity(enabled) {
+        const spouseSocialSecurityOptions = document.getElementById('spouse-social-security-options');
+        const spouseSsDisplay = document.getElementById('spouse-ss-display');
+        
+        if (enabled) {
+            spouseSocialSecurityOptions.classList.remove('d-none');
+            if (spouseSsDisplay) spouseSsDisplay.classList.remove('d-none');
+        } else {
+            spouseSocialSecurityOptions.classList.add('d-none');
+            if (spouseSsDisplay) spouseSsDisplay.classList.add('d-none');
+        }
+    }
+
     initializeNumberFormatting() {
         // Financial fields that should have comma formatting
         const financialFields = [
@@ -95,7 +137,8 @@ class FireCalculator {
             'retirement_expenses',
             'retirement_accounts',
             'taxable_accounts',
-            'social_security_monthly_benefit'
+            'social_security_monthly_benefit',
+            'spouse_social_security_monthly_benefit'
         ];
 
         financialFields.forEach(fieldId => {
@@ -172,6 +215,8 @@ class FireCalculator {
         
         const advancedMode = formData.get('advanced_mode') === 'on';
         const socialSecurityEnabled = formData.get('social_security_enabled') === 'on';
+        const spouseEnabled = formData.get('spouse_enabled') === 'on';
+        const spouseSocialSecurityEnabled = formData.get('spouse_social_security_enabled') === 'on';
         
         return {
             current_age: parseInt(formData.get('current_age')),
@@ -194,7 +239,14 @@ class FireCalculator {
             // Social Security parameters
             social_security_enabled: socialSecurityEnabled,
             social_security_start_age: socialSecurityEnabled ? parseInt(formData.get('social_security_start_age') || '65') : 65,
-            social_security_monthly_benefit: socialSecurityEnabled ? parseNumber(formData.get('social_security_monthly_benefit')) : 0
+            social_security_monthly_benefit: socialSecurityEnabled ? parseNumber(formData.get('social_security_monthly_benefit')) : 0,
+            
+            // Spouse parameters
+            spouse_enabled: spouseEnabled,
+            spouse_age: spouseEnabled ? parseInt(formData.get('spouse_age') || '30') : 30,
+            spouse_social_security_enabled: spouseEnabled && spouseSocialSecurityEnabled,
+            spouse_social_security_start_age: (spouseEnabled && spouseSocialSecurityEnabled) ? parseInt(formData.get('spouse_social_security_start_age') || '65') : 65,
+            spouse_social_security_monthly_benefit: (spouseEnabled && spouseSocialSecurityEnabled) ? parseNumber(formData.get('spouse_social_security_monthly_benefit')) : 0
         };
     }
 
@@ -363,6 +415,9 @@ class FireCalculator {
         // Update Social Security displays
         this.updateSocialSecurityDisplays(results);
         
+        // Update spouse displays
+        this.updateSpouseDisplays(results);
+        
         // Update status indicators
         this.updateStatusIndicators(results);
         
@@ -406,6 +461,64 @@ class FireCalculator {
             }
             if (startAgeEl) {
                 startAgeEl.textContent = data.social_security_start_age;
+            }
+        }
+        
+        // Update spouse Social Security displays
+        if (data.spouse_enabled && data.spouse_social_security_enabled) {
+            const spouseMonthlyBenefitEl = document.getElementById('spouse-ss-monthly-benefit');
+            const spouseStartAgeEl = document.getElementById('spouse-ss-start-age');
+            
+            if (spouseMonthlyBenefitEl) {
+                spouseMonthlyBenefitEl.textContent = this.formatCurrency(data.spouse_social_security_monthly_benefit);
+            }
+            if (spouseStartAgeEl) {
+                spouseStartAgeEl.textContent = data.spouse_social_security_start_age;
+            }
+        }
+        
+        // Update combined Social Security displays
+        if (data.social_security_enabled || (data.spouse_enabled && data.spouse_social_security_enabled)) {
+            const totalAnnualEl = document.getElementById('total-ss-annual-benefit');
+            const fireReductionEl = document.getElementById('fire-reduction-amount');
+            
+            let totalAnnual = 0;
+            if (data.social_security_enabled) {
+                totalAnnual += data.social_security_monthly_benefit * 12;
+            }
+            if (data.spouse_enabled && data.spouse_social_security_enabled) {
+                totalAnnual += data.spouse_social_security_monthly_benefit * 12;
+            }
+            
+            if (totalAnnualEl) {
+                totalAnnualEl.textContent = this.formatCurrency(totalAnnual);
+            }
+            if (fireReductionEl) {
+                fireReductionEl.textContent = this.formatCurrency(totalAnnual / (data.safe_withdrawal_rate / 100));
+            }
+        }
+    }
+
+    updateSpouseDisplays(results) {
+        const data = this.getFormData();
+        
+        if (data.spouse_enabled) {
+            const spouseAgeEl = document.getElementById('spouse-current-age');
+            const ageGapEl = document.getElementById('age-gap');
+            
+            if (spouseAgeEl) {
+                spouseAgeEl.textContent = data.spouse_age;
+            }
+            
+            if (ageGapEl) {
+                const ageDiff = data.current_age - data.spouse_age;
+                if (ageDiff > 0) {
+                    ageGapEl.textContent = `${ageDiff} years younger`;
+                } else if (ageDiff < 0) {
+                    ageGapEl.textContent = `${Math.abs(ageDiff)} years older`;
+                } else {
+                    ageGapEl.textContent = 'Same age';
+                }
             }
         }
     }

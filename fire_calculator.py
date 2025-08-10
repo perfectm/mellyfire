@@ -29,7 +29,13 @@ class FireCalculator:
         # Social Security parameters
         social_security_enabled: bool = False,
         social_security_start_age: int = 65,
-        social_security_monthly_benefit: float = 0.0
+        social_security_monthly_benefit: float = 0.0,
+        # Spouse parameters
+        spouse_enabled: bool = False,
+        spouse_age: int = 30,
+        spouse_social_security_enabled: bool = False,
+        spouse_social_security_start_age: int = 65,
+        spouse_social_security_monthly_benefit: float = 0.0
     ):
         self.current_age = current_age
         self.retirement_age = retirement_age
@@ -60,6 +66,14 @@ class FireCalculator:
         self.social_security_monthly_benefit = social_security_monthly_benefit
         self.social_security_annual_benefit = social_security_monthly_benefit * 12
         
+        # Spouse setup
+        self.spouse_enabled = spouse_enabled
+        self.spouse_age = spouse_age
+        self.spouse_social_security_enabled = spouse_social_security_enabled
+        self.spouse_social_security_start_age = spouse_social_security_start_age
+        self.spouse_social_security_monthly_benefit = spouse_social_security_monthly_benefit
+        self.spouse_social_security_annual_benefit = spouse_social_security_monthly_benefit * 12
+        
         # Calculated properties
         self.years_to_retirement = retirement_age - current_age
         self.years_to_project = 90 - current_age  # Project to age 90
@@ -69,14 +83,21 @@ class FireCalculator:
         """
         Calculate the FIRE number - amount needed for full retirement
         Using the 4% rule (or user-specified safe withdrawal rate)
-        Accounts for Social Security benefits if enabled
+        Accounts for Social Security benefits (user + spouse) if enabled
         """
+        total_ss_benefits = 0
+        
+        # Add primary Social Security benefits
         if self.social_security_enabled:
-            # Reduce expenses by Social Security benefits
-            net_retirement_expenses = max(0, self.retirement_expenses - self.social_security_annual_benefit)
-            return net_retirement_expenses / self.safe_withdrawal_rate
-        else:
-            return self.retirement_expenses / self.safe_withdrawal_rate
+            total_ss_benefits += self.social_security_annual_benefit
+            
+        # Add spouse Social Security benefits
+        if self.spouse_enabled and self.spouse_social_security_enabled:
+            total_ss_benefits += self.spouse_social_security_annual_benefit
+        
+        # Reduce expenses by total Social Security benefits
+        net_retirement_expenses = max(0, self.retirement_expenses - total_ss_benefits)
+        return net_retirement_expenses / self.safe_withdrawal_rate
     
     def calculate_coast_fire_number(self) -> float:
         """
@@ -199,10 +220,19 @@ class FireCalculator:
                 
                 # Apply Social Security benefits if enabled and age appropriate
                 net_expenses = inflation_adjusted_expenses
-                social_security_benefit = 0
+                total_social_security_benefit = 0
+                
+                # Primary Social Security
                 if self.social_security_enabled and age >= self.social_security_start_age:
-                    social_security_benefit = self.social_security_annual_benefit
-                    net_expenses = max(0, inflation_adjusted_expenses - social_security_benefit)
+                    total_social_security_benefit += self.social_security_annual_benefit
+                
+                # Spouse Social Security (based on spouse's age, not primary age)
+                if self.spouse_enabled and self.spouse_social_security_enabled:
+                    spouse_current_age = self.spouse_age + (age - self.current_age)  # Calculate spouse's age at this point
+                    if spouse_current_age >= self.spouse_social_security_start_age:
+                        total_social_security_benefit += self.spouse_social_security_annual_benefit
+                
+                net_expenses = max(0, inflation_adjusted_expenses - total_social_security_benefit)
                 
                 if self.advanced_mode:
                     # Grow accounts
@@ -232,7 +262,7 @@ class FireCalculator:
                     asset_growth = current_assets * self.investment_return_rate
                     current_assets = current_assets + asset_growth - net_expenses
                 
-                current_expenses = net_expenses + social_security_benefit  # Total expenses covered
+                current_expenses = net_expenses + total_social_security_benefit  # Total expenses covered
             
             # Coast FIRE milestone for this age
             years_left_to_retirement = max(0, self.retirement_age - age)
@@ -256,7 +286,7 @@ class FireCalculator:
                 'taxable_accounts': current_taxable_accounts if self.advanced_mode else current_assets,
                 'accessible_assets': accessible_assets,
                 'expenses': current_expenses if age >= self.retirement_age else self.monthly_expenses * 12,
-                'social_security_benefit': social_security_benefit if age >= self.retirement_age else 0,
+                'social_security_benefit': total_social_security_benefit if age >= self.retirement_age else 0,
                 'coast_fire_milestone': coast_fire_milestone,
                 'achieved_coast_fire': accessible_assets >= coast_fire_milestone,
                 'achieved_fire': accessible_assets >= self.calculate_fire_number()
