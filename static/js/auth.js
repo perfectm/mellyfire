@@ -29,6 +29,46 @@ class AuthManager {
         window.location.href = '/';
     }
 
+    async loadMostRecentCalculation() {
+        if (!this.isAuthenticated()) {
+            return false;
+        }
+        
+        try {
+            const response = await fetch('/api/calculations', {
+                headers: this.getAuthHeaders()
+            });
+            
+            if (response.ok) {
+                const calculations = await response.json();
+                if (calculations.length > 0) {
+                    // Sort by created_at descending to get most recent first
+                    calculations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    const mostRecent = calculations[0];
+                    
+                    console.log('Loading most recent calculation:', mostRecent);
+                    this.populateFormWithCalculation(mostRecent);
+                    
+                    // If calculator exists, trigger calculation display
+                    if (window.calculator) {
+                        // Use a small delay to ensure form is fully populated
+                        setTimeout(() => {
+                            window.calculator.calculateGuest();
+                        }, 100);
+                    }
+                    
+                    return true;
+                }
+            } else if (response.status === 401) {
+                this.logout();
+            }
+        } catch (error) {
+            console.error('Error loading most recent calculation:', error);
+        }
+        
+        return false;
+    }
+
     updateNavigation() {
         const authNav = document.getElementById('auth-nav');
         if (!authNav) return;

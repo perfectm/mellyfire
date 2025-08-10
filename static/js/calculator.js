@@ -5,6 +5,51 @@ class FireCalculator {
         this.currentResults = null;
         this.initializeEventListeners();
         this.updateVisibility();
+        this.autoLoadRecentCalculation();
+    }
+
+    async autoLoadRecentCalculation() {
+        // Auto-load most recent calculation for authenticated users
+        if (authManager.isAuthenticated()) {
+            // Don't auto-load if there are URL parameters (user might be coming from a specific link)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString()) {
+                console.log('Skipping auto-load due to URL parameters');
+                return;
+            }
+            
+            try {
+                const loaded = await authManager.loadMostRecentCalculation();
+                if (loaded) {
+                    console.log('Auto-loaded most recent calculation');
+                    // Show a subtle success message
+                    this.showSuccessToast('Previous calculation loaded');
+                }
+            } catch (error) {
+                console.error('Error auto-loading recent calculation:', error);
+            }
+        }
+    }
+
+    showSuccessToast(message) {
+        // Create a temporary toast notification
+        const toast = document.createElement('div');
+        toast.className = 'alert alert-success position-fixed';
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; opacity: 0.9;';
+        toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+        
+        document.body.appendChild(toast);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            toast.style.transition = 'opacity 0.5s';
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 500);
+        }, 3000);
     }
 
     initializeEventListeners() {
@@ -866,8 +911,7 @@ class FireCalculator {
     }
 
     showSuccess(message) {
-        // Show success toast or alert
-        console.log(message);
+        this.showSuccessToast(message);
     }
 }
 
