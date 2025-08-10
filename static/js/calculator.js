@@ -246,7 +246,11 @@ class FireCalculator {
             spouse_age: spouseEnabled ? parseInt(formData.get('spouse_age') || '30') : 30,
             spouse_social_security_enabled: spouseEnabled && spouseSocialSecurityEnabled,
             spouse_social_security_start_age: (spouseEnabled && spouseSocialSecurityEnabled) ? parseInt(formData.get('spouse_social_security_start_age') || '65') : 65,
-            spouse_social_security_monthly_benefit: (spouseEnabled && spouseSocialSecurityEnabled) ? parseNumber(formData.get('spouse_social_security_monthly_benefit')) : 0
+            spouse_social_security_monthly_benefit: (spouseEnabled && spouseSocialSecurityEnabled) ? parseNumber(formData.get('spouse_social_security_monthly_benefit')) : 0,
+            
+            // 401K contribution parameters
+            contribution_401k_percentage: parseFloat(formData.get('contribution_401k_percentage') || '6'),
+            employer_match_percentage: parseFloat(formData.get('employer_match_percentage') || '50')
         };
     }
 
@@ -303,13 +307,20 @@ class FireCalculator {
         const yearsToRetirement = data.retirement_age - data.current_age;
         const coastFireNumber = fireNumber / Math.pow(1 + realReturnRate, yearsToRetirement);
         
+        // Calculate 401K contributions
+        const monthly401k = data.monthly_income * (data.contribution_401k_percentage / 100);
+        const monthlyEmployerMatch = monthly401k * (data.employer_match_percentage / 100);
+        const annual401k = monthly401k * 12;
+        const annualEmployerMatch = monthlyEmployerMatch * 12;
+        
         // Calculate years to FIRE
         let yearsToFire = null;
         const annualSavings = data.monthly_savings * 12;
+        const totalAnnualSavings = annualSavings + annual401k + annualEmployerMatch;
         const returnRate = data.investment_return_rate / 100;
         
-        if (annualSavings > 0 && returnRate > 0) {
-            const numerator = Math.log((fireNumber * returnRate + annualSavings) / (data.current_assets * returnRate + annualSavings));
+        if (totalAnnualSavings > 0 && returnRate > 0) {
+            const numerator = Math.log((fireNumber * returnRate + totalAnnualSavings) / (data.current_assets * returnRate + totalAnnualSavings));
             const denominator = Math.log(1 + returnRate);
             yearsToFire = Math.max(0, numerator / denominator);
         }
@@ -318,8 +329,8 @@ class FireCalculator {
         let yearsToCoastFire = null;
         if (data.current_assets >= coastFireNumber) {
             yearsToCoastFire = 0;
-        } else if (annualSavings > 0 && returnRate > 0) {
-            const numerator = Math.log((coastFireNumber * returnRate + annualSavings) / (data.current_assets * returnRate + annualSavings));
+        } else if (totalAnnualSavings > 0 && returnRate > 0) {
+            const numerator = Math.log((coastFireNumber * returnRate + totalAnnualSavings) / (data.current_assets * returnRate + totalAnnualSavings));
             const denominator = Math.log(1 + returnRate);
             yearsToCoastFire = Math.max(0, numerator / denominator);
         }
@@ -349,6 +360,11 @@ class FireCalculator {
         
         let currentAssets = data.current_assets;
         const annualSavings = data.monthly_savings * 12;
+        const monthly401k = data.monthly_income * (data.contribution_401k_percentage / 100);
+        const monthlyEmployerMatch = monthly401k * (data.employer_match_percentage / 100);
+        const annual401k = monthly401k * 12;
+        const annualEmployerMatch = monthlyEmployerMatch * 12;
+        const totalAnnualSavings = annualSavings + annual401k + annualEmployerMatch;
         const returnRate = data.investment_return_rate / 100;
         const realReturnRate = (data.investment_return_rate - data.inflation_rate) / 100;
         
@@ -369,7 +385,7 @@ class FireCalculator {
             
             // Update assets for next year
             if (age < data.retirement_age) {
-                currentAssets = currentAssets * (1 + returnRate) + annualSavings;
+                currentAssets = currentAssets * (1 + returnRate) + totalAnnualSavings;
             } else {
                 const inflationAdjustedExpenses = data.retirement_expenses * Math.pow(1 + data.inflation_rate / 100, age - data.retirement_age);
                 currentAssets = currentAssets * (1 + returnRate) - inflationAdjustedExpenses;
@@ -417,6 +433,9 @@ class FireCalculator {
         
         // Update spouse displays
         this.updateSpouseDisplays(results);
+        
+        // Update 401K displays
+        this.update401kDisplays(results);
         
         // Update status indicators
         this.updateStatusIndicators(results);
@@ -520,6 +539,41 @@ class FireCalculator {
                     ageGapEl.textContent = 'Same age';
                 }
             }
+        }
+    }
+
+    update401kDisplays(results) {
+        const data = this.getFormData();
+        
+        const monthly401k = data.monthly_income * (data.contribution_401k_percentage / 100);
+        const monthlyEmployerMatch = monthly401k * (data.employer_match_percentage / 100);
+        const totalMonthly401k = monthly401k + monthlyEmployerMatch;
+        const totalAnnual401k = totalMonthly401k * 12;
+        
+        const employee401kEl = document.getElementById('employee-401k-monthly');
+        const employerMatchEl = document.getElementById('employer-match-monthly');
+        const totalMonthlyEl = document.getElementById('total-401k-monthly');
+        const totalAnnualEl = document.getElementById('total-401k-annual');
+        const employeePercentageEl = document.getElementById('employee-401k-percentage');
+        const matchPercentageEl = document.getElementById('employer-match-percentage');
+        
+        if (employee401kEl) {
+            employee401kEl.textContent = this.formatCurrency(monthly401k);
+        }
+        if (employerMatchEl) {
+            employerMatchEl.textContent = this.formatCurrency(monthlyEmployerMatch);
+        }
+        if (totalMonthlyEl) {
+            totalMonthlyEl.textContent = this.formatCurrency(totalMonthly401k);
+        }
+        if (totalAnnualEl) {
+            totalAnnualEl.textContent = this.formatCurrency(totalAnnual401k);
+        }
+        if (employeePercentageEl) {
+            employeePercentageEl.textContent = data.contribution_401k_percentage;
+        }
+        if (matchPercentageEl) {
+            matchPercentageEl.textContent = data.employer_match_percentage;
         }
     }
 

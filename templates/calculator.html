@@ -107,6 +107,40 @@
                                        value="1,500" required>
                             </div>
                             
+                            <!-- 401K Contribution Section -->
+                            <div class="card mb-3 border-success">
+                                <div class="card-body">
+                                    <h6 class="card-title text-success">
+                                        <i class="fas fa-piggy-bank"></i> 401K Contributions
+                                    </h6>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="contribution_401k_percentage" class="form-label">
+                                                Employee Contribution (%)
+                                            </label>
+                                            <input type="number" class="form-control" id="contribution_401k_percentage" name="contribution_401k_percentage" 
+                                                   min="0" max="100" step="0.5" value="6" required>
+                                            <div class="form-text">Percentage of gross income</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="employer_match_percentage" class="form-label">
+                                                Employer Match (%)
+                                            </label>
+                                            <input type="number" class="form-control" id="employer_match_percentage" name="employer_match_percentage" 
+                                                   min="0" max="200" step="5" value="50" required>
+                                            <div class="form-text">% of your contribution</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-2 p-2 bg-light rounded">
+                                        <small class="text-muted">
+                                            <strong>Example:</strong> $7,000 income × 6% = $420 employee + $210 match (50%) = $630 total
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="mb-3">
                                 <label for="retirement_expenses" class="form-label">Annual Retirement Expenses ($)</label>
                                 <input type="text" class="form-control" id="retirement_expenses" name="retirement_expenses" 
@@ -393,6 +427,52 @@
                                 </div>
                                 <p class="text-muted mb-0 mt-2">
                                     <small><i class="fas fa-info-circle"></i> Asset amounts above include both your and your spouse's combined investments.</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 401K Contribution Breakdown -->
+                <div id="four01k-breakdown" class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-piggy-bank"></i> 401K Contribution Breakdown
+                                </h5>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6 class="text-muted">Employee Monthly</h6>
+                                            <h4 id="employee-401k-monthly" class="text-primary">$0</h4>
+                                            <small class="text-muted"><span id="employee-401k-percentage">6</span>% of income</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6 class="text-muted">Employer Match</h6>
+                                            <h4 id="employer-match-monthly" class="text-success">$0</h4>
+                                            <small class="text-muted"><span id="employer-match-percentage">50</span>% of contribution</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6 class="text-muted">Total Monthly</h6>
+                                            <h4 id="total-401k-monthly" class="text-info">$0</h4>
+                                            <small class="text-muted">Combined 401K</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6 class="text-muted">Total Annual</h6>
+                                            <h4 id="total-401k-annual" class="text-warning">$0</h4>
+                                            <small class="text-muted">Goes to retirement</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-0 mt-2">
+                                    <small><i class="fas fa-info-circle"></i> 401K contributions are added to your total monthly savings and go directly to retirement accounts.</small>
                                 </p>
                             </div>
                         </div>

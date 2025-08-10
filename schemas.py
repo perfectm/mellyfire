@@ -49,6 +49,10 @@ class FireCalculationCreate(BaseModel):
     spouse_social_security_enabled: bool = Field(False, description="Include spouse Social Security benefits")
     spouse_social_security_start_age: Optional[int] = Field(65, ge=62, le=70, description="Age for spouse to start Social Security")
     spouse_social_security_monthly_benefit: Optional[float] = Field(0, ge=0, description="Estimated spouse monthly Social Security benefit ($)")
+    
+    # 401K contribution parameters
+    contribution_401k_percentage: float = Field(6.0, ge=0, le=100, description="Employee 401K contribution percentage of income")
+    employer_match_percentage: float = Field(50.0, ge=0, le=200, description="Employer match percentage (% of employee contribution)")
 
     def validate_retirement_age(self):
         if self.retirement_age <= self.current_age:
@@ -85,6 +89,10 @@ class FireCalculationResponse(BaseModel):
     spouse_social_security_enabled: bool
     spouse_social_security_start_age: Optional[int]
     spouse_social_security_monthly_benefit: Optional[float]
+    
+    # 401K contribution parameters
+    contribution_401k_percentage: float
+    employer_match_percentage: float
     
     # Calculated results
     fire_number: float

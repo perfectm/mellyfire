@@ -170,7 +170,10 @@ async def calculate_fire(
         spouse_age=calculation.spouse_age or 30,
         spouse_social_security_enabled=calculation.spouse_social_security_enabled,
         spouse_social_security_start_age=calculation.spouse_social_security_start_age or 65,
-        spouse_social_security_monthly_benefit=calculation.spouse_social_security_monthly_benefit or 0
+        spouse_social_security_monthly_benefit=calculation.spouse_social_security_monthly_benefit or 0,
+        # 401K contribution parameters
+        contribution_401k_percentage=calculation.contribution_401k_percentage,
+        employer_match_percentage=calculation.employer_match_percentage
     )
     
     results = calculator.calculate_all()

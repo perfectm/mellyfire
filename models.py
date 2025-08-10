@@ -53,6 +53,10 @@ class FireCalculation(Base):
     spouse_social_security_start_age = Column(Integer, default=65, nullable=True)
     spouse_social_security_monthly_benefit = Column(Float, default=0, nullable=True)
     
+    # 401K contribution parameters
+    contribution_401k_percentage = Column(Float, default=6.0, nullable=False)  # Employee contribution percentage
+    employer_match_percentage = Column(Float, default=50.0, nullable=False)    # Employer match percentage (% of employee contribution)
+    
     # Calculated results
     fire_number = Column(Float, nullable=False)
     coast_fire_number = Column(Float, nullable=False)

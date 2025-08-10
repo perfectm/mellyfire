@@ -35,7 +35,10 @@ class FireCalculator:
         spouse_age: int = 30,
         spouse_social_security_enabled: bool = False,
         spouse_social_security_start_age: int = 65,
-        spouse_social_security_monthly_benefit: float = 0.0
+        spouse_social_security_monthly_benefit: float = 0.0,
+        # 401K contribution parameters
+        contribution_401k_percentage: float = 6.0,
+        employer_match_percentage: float = 50.0
     ):
         self.current_age = current_age
         self.retirement_age = retirement_age
@@ -74,10 +77,19 @@ class FireCalculator:
         self.spouse_social_security_monthly_benefit = spouse_social_security_monthly_benefit
         self.spouse_social_security_annual_benefit = spouse_social_security_monthly_benefit * 12
         
+        # 401K contribution setup
+        self.contribution_401k_percentage = contribution_401k_percentage
+        self.employer_match_percentage = employer_match_percentage
+        self.monthly_401k_contribution = monthly_income * (contribution_401k_percentage / 100)
+        self.monthly_employer_match = self.monthly_401k_contribution * (employer_match_percentage / 100)
+        self.annual_401k_contribution = self.monthly_401k_contribution * 12
+        self.annual_employer_match = self.monthly_employer_match * 12
+        
         # Calculated properties
         self.years_to_retirement = retirement_age - current_age
         self.years_to_project = 90 - current_age  # Project to age 90
         self.annual_savings = monthly_savings * 12
+        self.total_annual_savings = self.annual_savings + self.annual_401k_contribution + self.annual_employer_match
         
     def calculate_fire_number(self) -> float:
         """
@@ -117,7 +129,7 @@ class FireCalculator:
         """
         fire_number = self.calculate_fire_number()
         
-        if self.annual_savings <= 0:
+        if self.total_annual_savings <= 0:
             # No savings, will never reach FIRE
             return float('inf')
         
@@ -125,7 +137,7 @@ class FireCalculator:
         # Solving for t when FV = fire_number
         r = self.investment_return_rate
         pv = self.current_assets
-        pmt = self.annual_savings
+        pmt = self.total_annual_savings
         fv = fire_number
         
         if r == 0:
@@ -152,12 +164,12 @@ class FireCalculator:
         if self.current_assets >= coast_fire_number:
             return 0  # Already achieved Coast FIRE
         
-        if self.annual_savings <= 0:
+        if self.total_annual_savings <= 0:
             return float('inf')
         
         r = self.investment_return_rate
         pv = self.current_assets
-        pmt = self.annual_savings
+        pmt = self.total_annual_savings
         fv = coast_fire_number
         
         if r == 0:
@@ -202,17 +214,17 @@ class FireCalculator:
                     retirement_growth = current_retirement_accounts * self.retirement_account_return_rate
                     taxable_growth = current_taxable_accounts * self.investment_return_rate
                     
-                    # Assume savings split equally between retirement and taxable (could be made configurable)
-                    retirement_contribution = self.annual_savings * 0.5
+                    # 401K contributions go to retirement accounts, regular savings split
+                    retirement_contribution = (self.annual_savings * 0.5) + self.annual_401k_contribution + self.annual_employer_match
                     taxable_contribution = self.annual_savings * 0.5
                     
                     current_retirement_accounts += retirement_growth + retirement_contribution
                     current_taxable_accounts += taxable_growth + taxable_contribution
                     current_assets = current_retirement_accounts + current_taxable_accounts
                 else:
-                    # Simple growth
+                    # Simple growth - include all savings (regular + 401K + match)
                     asset_growth = current_assets * self.investment_return_rate
-                    current_assets = current_assets + asset_growth + self.annual_savings
+                    current_assets = current_assets + asset_growth + self.total_annual_savings
                 
             else:
                 # Retired, need to withdraw from assets
