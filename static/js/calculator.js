@@ -777,7 +777,8 @@ class FireCalculator {
                         borderColor: 'rgb(54, 162, 235)',
                         backgroundColor: 'rgba(54, 162, 235, 0.1)',
                         borderWidth: 3,
-                        fill: false
+                        fill: false,
+                        yAxisID: 'y'
                     },
                     {
                         label: 'Coast FIRE Milestone',
@@ -786,7 +787,8 @@ class FireCalculator {
                         backgroundColor: 'rgba(75, 192, 192, 0.1)',
                         borderWidth: 2,
                         borderDash: [5, 5],
-                        fill: false
+                        fill: false,
+                        yAxisID: 'y1'
                     },
                     {
                         label: 'FIRE Number',
@@ -795,39 +797,87 @@ class FireCalculator {
                         backgroundColor: 'rgba(255, 99, 132, 0.1)',
                         borderWidth: 2,
                         borderDash: [10, 5],
-                        fill: false
+                        fill: false,
+                        yAxisID: 'y1'
                     }
                 ]
             },
             options: {
                 responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 scales: {
                     x: {
                         display: true,
                         title: {
                             display: true,
-                            text: 'Age'
+                            text: 'Age',
+                            color: '#ffffff'
+                        },
+                        ticks: {
+                            color: '#cbd5e0'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
                     },
                     y: {
+                        type: 'linear',
                         display: true,
+                        position: 'left',
                         title: {
                             display: true,
-                            text: 'Assets ($)'
+                            text: 'Your Assets ($)',
+                            color: 'rgb(54, 162, 235)'
                         },
                         ticks: {
+                            color: 'rgb(54, 162, 235)',
                             callback: function(value) {
                                 return '$' + (value / 1000000).toFixed(1) + 'M';
                             }
+                        },
+                        grid: {
+                            color: 'rgba(54, 162, 235, 0.1)'
                         }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'FIRE Targets ($)',
+                            color: 'rgb(75, 192, 192)'
+                        },
+                        ticks: {
+                            color: 'rgb(75, 192, 192)',
+                            callback: function(value) {
+                                return '$' + (value / 1000000).toFixed(1) + 'M';
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
                     }
                 },
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'top'
+                        position: 'top',
+                        labels: {
+                            color: '#ffffff',
+                            usePointStyle: true,
+                            padding: 20
+                        }
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(45, 55, 72, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#cbd5e0',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
                         callbacks: {
                             label: function(context) {
                                 return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
