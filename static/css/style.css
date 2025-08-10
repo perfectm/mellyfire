@@ -50,17 +50,41 @@
     padding: 1.5rem;
 }
 
-/* Form styling */
+/* Form styling - Enhanced for better contrast */
 .form-control {
     border-radius: 8px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #68d391;
     padding: 0.75rem 1rem;
     transition: all 0.3s ease;
+    background-color: #4a5568;
+    color: #ffffff;
+    font-weight: 500;
 }
 
 .form-control:focus {
     border-color: var(--fire-primary);
     box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+    background-color: #4a5568;
+    color: #ffffff;
+}
+
+.form-control::placeholder {
+    color: #a0aec0;
+    opacity: 0.8;
+}
+
+/* Form selects */
+.form-select {
+    background-color: #4a5568;
+    color: #ffffff;
+    border: 2px solid #68d391;
+    font-weight: 500;
+}
+
+.form-select:focus {
+    background-color: #4a5568;
+    color: #ffffff;
+    border-color: var(--fire-primary);
 }
 
 /* Button styling */
@@ -210,7 +234,7 @@
     }
 }
 
-/* Dark mode support */
+/* Dark mode support - Enhanced for better contrast */
 @media (prefers-color-scheme: dark) {
     :root {
         --bs-body-bg: #1a1a1a;
@@ -223,14 +247,17 @@
     }
     
     .form-control {
-        background-color: #2d3748;
-        border-color: #4a5568;
-        color: #ffffff;
+        background-color: #4a5568 !important;
+        border-color: #68d391 !important;
+        color: #ffffff !important;
+        font-weight: 500;
     }
     
     .form-control:focus {
-        background-color: #2d3748;
-        color: #ffffff;
+        background-color: #4a5568 !important;
+        color: #ffffff !important;
+        border-color: var(--fire-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
     }
     
     .info-card {
@@ -240,15 +267,36 @@
     
     /* Override dark mode text colors for better contrast */
     .text-muted {
-        color: #a0aec0 !important;
+        color: #cbd5e0 !important;
     }
     
     .form-text {
-        color: #a0aec0 !important;
+        color: #cbd5e0 !important;
+        font-weight: 400;
     }
     
     .form-label {
         color: #f7fafc !important;
+        font-weight: 500;
+    }
+    
+    /* Input number controls */
+    .form-control[type="number"] {
+        background-color: #4a5568 !important;
+        color: #ffffff !important;
+    }
+    
+    /* Select dropdowns */
+    .form-select {
+        background-color: #4a5568 !important;
+        color: #ffffff !important;
+        border-color: #68d391 !important;
+    }
+    
+    .form-select:focus {
+        background-color: #4a5568 !important;
+        color: #ffffff !important;
+        border-color: var(--fire-primary) !important;
     }
 }
 
@@ -460,6 +508,42 @@
 .card-title {
     color: #ffffff !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 401K Section specific styling */
+.border-success .card-body {
+    background-color: #2d3748 !important;
+}
+
+.border-success .form-control {
+    background-color: #4a5568 !important;
+    color: #ffffff !important;
+    border-color: #68d391 !important;
+}
+
+.border-success .form-control:focus {
+    background-color: #4a5568 !important;
+    color: #ffffff !important;
+    border-color: #68d391 !important;
+    box-shadow: 0 0 0 0.2rem rgba(104, 211, 145, 0.25);
+}
+
+.border-success .form-text {
+    color: #cbd5e0 !important;
+    font-weight: 400;
+}
+
+.border-success .bg-light {
+    background-color: #4a5568 !important;
+    border: 1px solid #68d391 !important;
+}
+
+.border-success .bg-light .text-muted {
+    color: #e2e8f0 !important;
+}
+
+.border-success .card-title {
+    color: #68d391 !important;
 }
 
 /* Form sections */
