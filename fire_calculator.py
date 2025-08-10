@@ -96,20 +96,41 @@ class FireCalculator:
         Calculate the FIRE number - amount needed for full retirement
         Using the 4% rule (or user-specified safe withdrawal rate)
         Accounts for Social Security benefits (user + spouse) if enabled
+        
+        For early retirement before Social Security, calculates bridge assets needed
         """
+        # Determine the earliest Social Security start age
+        earliest_ss_age = None
         total_ss_benefits = 0
         
-        # Add primary Social Security benefits
+        # Check primary Social Security
         if self.social_security_enabled:
+            earliest_ss_age = self.social_security_start_age
             total_ss_benefits += self.social_security_annual_benefit
             
-        # Add spouse Social Security benefits
+        # Check spouse Social Security
         if self.spouse_enabled and self.spouse_social_security_enabled:
+            spouse_ss_age = self.spouse_social_security_start_age
+            if earliest_ss_age is None or spouse_ss_age < earliest_ss_age:
+                earliest_ss_age = spouse_ss_age
             total_ss_benefits += self.spouse_social_security_annual_benefit
         
-        # Reduce expenses by total Social Security benefits
-        net_retirement_expenses = max(0, self.retirement_expenses - total_ss_benefits)
-        return net_retirement_expenses / self.safe_withdrawal_rate
+        # If retiring before Social Security eligibility, need bridge assets
+        if earliest_ss_age and self.retirement_age < earliest_ss_age:
+            # Calculate bridge years (retirement to Social Security)
+            bridge_years = earliest_ss_age - self.retirement_age
+            bridge_expenses = self.retirement_expenses * bridge_years
+            
+            # Calculate post-Social Security expenses (may be negative if SS > expenses)
+            post_ss_expenses = max(0, self.retirement_expenses - total_ss_benefits)
+            post_ss_assets_needed = post_ss_expenses / self.safe_withdrawal_rate
+            
+            # Total FIRE number = bridge expenses + post-SS assets needed
+            return bridge_expenses + post_ss_assets_needed
+        else:
+            # Traditional calculation when retiring at or after Social Security age
+            net_retirement_expenses = max(0, self.retirement_expenses - total_ss_benefits)
+            return net_retirement_expenses / self.safe_withdrawal_rate
     
     def calculate_coast_fire_number(self) -> float:
         """
