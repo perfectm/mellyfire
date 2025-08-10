@@ -211,6 +211,7 @@ class FireCalculator {
         const currentAgeField = document.getElementById('current_age');
         const retirementAgeField = document.getElementById('retirement_age');
         const retirementYearDisplay = document.getElementById('retirement-year-display');
+        const retirementAgeDisplay = document.getElementById('retirement-age-display');
         
         this.updateRetirementYear = () => {
             if (currentAgeField && retirementAgeField && retirementYearDisplay) {
@@ -219,6 +220,11 @@ class FireCalculator {
                 const currentYear = new Date().getFullYear();
                 const yearsUntilRetirement = retirementAge - currentAge;
                 const retirementYear = currentYear + yearsUntilRetirement;
+                
+                // Update the age display badge
+                if (retirementAgeDisplay) {
+                    retirementAgeDisplay.textContent = retirementAge;
+                }
                 
                 if (yearsUntilRetirement >= 0) {
                     retirementYearDisplay.textContent = `(${retirementYear})`;

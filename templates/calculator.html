@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}FIRE Calculator - Coast FIRE Calculator{% endblock %}
+{% block title %}MellyFIRE Calculator - Coast FIRE Calculator{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -11,7 +11,7 @@
                 <div class="card-header bg-primary text-white">
                     <h4 class="card-title mb-0">
                         <i class="fas fa-calculator"></i>
-                        FIRE Calculator
+                        MellyFIRE Calculator
                     </h4>
                 </div>
                 
@@ -32,8 +32,15 @@
                                     Desired Retirement Age
                                     <small class="text-muted" id="retirement-year-display"></small>
                                 </label>
-                                <input type="number" class="form-control" id="retirement_age" name="retirement_age" 
-                                       min="50" max="100" value="65" required>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2 text-muted">50</span>
+                                    <input type="range" class="form-range flex-grow-1" id="retirement_age" name="retirement_age" 
+                                           min="50" max="100" value="65" required>
+                                    <span class="ms-2 text-muted">100</span>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <span class="badge bg-primary fs-6" id="retirement-age-display">65</span>
+                                </div>
                             </div>
                         </div>
 
