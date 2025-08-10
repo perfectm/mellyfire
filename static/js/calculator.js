@@ -307,10 +307,17 @@ class FireCalculator {
         const spouseEnabled = formData.get('spouse_enabled') === 'on';
         const spouseSocialSecurityEnabled = formData.get('spouse_social_security_enabled') === 'on';
         
+        // Calculate total current assets based on mode
+        const retirementAccounts = advancedMode ? parseNumber(formData.get('retirement_accounts')) : 0;
+        const taxableAccounts = advancedMode ? parseNumber(formData.get('taxable_accounts')) : 0;
+        const currentAssets = advancedMode ? 
+            (retirementAccounts + taxableAccounts) : 
+            parseNumber(formData.get('current_assets'));
+
         return {
             current_age: parseInt(formData.get('current_age')),
             retirement_age: parseInt(formData.get('retirement_age')),
-            current_assets: parseNumber(formData.get('current_assets')),
+            current_assets: currentAssets,
             monthly_income: parseNumber(formData.get('monthly_income')),
             monthly_expenses: parseNumber(formData.get('monthly_expenses')),
             monthly_savings: parseNumber(formData.get('monthly_savings')),
@@ -321,8 +328,8 @@ class FireCalculator {
             
             // Advanced mode parameters
             advanced_mode: advancedMode,
-            retirement_accounts: advancedMode ? parseNumber(formData.get('retirement_accounts')) : 0,
-            taxable_accounts: advancedMode ? parseNumber(formData.get('taxable_accounts')) : 0,
+            retirement_accounts: retirementAccounts,
+            taxable_accounts: taxableAccounts,
             retirement_account_return_rate: advancedMode ? parseFloat(formData.get('retirement_account_return_rate') || '7') : 7,
             
             // Social Security parameters
