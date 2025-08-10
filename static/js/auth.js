@@ -137,7 +137,6 @@ class AuthManager {
     }
 
     async loadCalculation(calculationId) {
-        alert('Load button clicked! ID: ' + calculationId);
         console.log('loadCalculation called with ID:', calculationId);
         try {
             const response = await fetch('/api/calculations', {
