@@ -20,6 +20,9 @@ class FireCalculator {
             
             // Initialize advanced mode and Social Security toggles
             this.initializeToggleHandlers();
+            
+            // Initialize retirement year calculation
+            this.initializeRetirementYearCalculation();
         }
 
         const saveButton = document.getElementById('save-calculation');
@@ -157,6 +160,41 @@ class FireCalculator {
                 }
             }
         });
+    }
+
+    initializeRetirementYearCalculation() {
+        const currentAgeField = document.getElementById('current_age');
+        const retirementAgeField = document.getElementById('retirement_age');
+        const retirementYearDisplay = document.getElementById('retirement-year-display');
+        
+        this.updateRetirementYear = () => {
+            if (currentAgeField && retirementAgeField && retirementYearDisplay) {
+                const currentAge = parseInt(currentAgeField.value) || 30;
+                const retirementAge = parseInt(retirementAgeField.value) || 65;
+                const currentYear = new Date().getFullYear();
+                const yearsUntilRetirement = retirementAge - currentAge;
+                const retirementYear = currentYear + yearsUntilRetirement;
+                
+                if (yearsUntilRetirement >= 0) {
+                    retirementYearDisplay.textContent = `(${retirementYear})`;
+                    retirementYearDisplay.style.display = 'inline';
+                } else {
+                    retirementYearDisplay.textContent = '(Past retirement age)';
+                    retirementYearDisplay.style.display = 'inline';
+                }
+            }
+        };
+        
+        // Update on page load
+        this.updateRetirementYear();
+        
+        // Update when either field changes
+        if (currentAgeField) {
+            currentAgeField.addEventListener('input', this.updateRetirementYear);
+        }
+        if (retirementAgeField) {
+            retirementAgeField.addEventListener('input', this.updateRetirementYear);
+        }
     }
 
     formatNumberInput(event) {

@@ -241,6 +241,13 @@ class AuthManager {
         // 401K contributions
         setValue('contribution_401k_percentage', calc.contribution_401k_percentage);
         setValue('employer_match_percentage', calc.employer_match_percentage);
+        
+        // Update retirement year display after populating age fields
+        setTimeout(() => {
+            if (window.calculator && window.calculator.updateRetirementYear) {
+                window.calculator.updateRetirementYear();
+            }
+        }, 100);
     }
 
     async deleteCalculation(calculationId) {
