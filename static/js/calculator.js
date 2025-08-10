@@ -384,7 +384,8 @@ class FireCalculator {
             coast_fire_age: yearsToCoastFire ? data.current_age + yearsToCoastFire : null,
             projection_data: projectionData,
             current_coast_fire_status: data.current_assets >= coastFireNumber,
-            current_fire_status: data.current_assets >= fireNumber
+            current_fire_status: data.current_assets >= fireNumber,
+            monte_carlo_stats: null  // No Monte Carlo stats in client-side calculation
         };
     }
 
@@ -474,6 +475,9 @@ class FireCalculator {
         
         // Update 401K displays
         this.update401kDisplays(results);
+        
+        // Update Monte Carlo statistics
+        this.updateMonteCarloDisplays(results);
         
         // Update status indicators
         this.updateStatusIndicators(results);
@@ -612,6 +616,54 @@ class FireCalculator {
         }
         if (matchPercentageEl) {
             matchPercentageEl.textContent = data.employer_match_percentage;
+        }
+    }
+
+    updateMonteCarloDisplays(results) {
+        const monteCarloSection = document.getElementById('monte-carlo-stats');
+        
+        if (results.monte_carlo_stats && results.monte_carlo_stats !== null) {
+            // Show Monte Carlo statistics
+            monteCarloSection.classList.remove('d-none');
+            
+            const stats = results.monte_carlo_stats;
+            
+            // Update success rate
+            const successRateEl = document.getElementById('mc-success-rate');
+            if (successRateEl) {
+                const successPercent = (stats.success_rate * 100).toFixed(1);
+                successRateEl.textContent = `${successPercent}%`;
+                
+                // Color code based on success rate
+                successRateEl.className = 'text-success'; // Default green
+                if (stats.success_rate < 0.85) {
+                    successRateEl.className = 'text-warning'; // Yellow for < 85%
+                }
+                if (stats.success_rate < 0.75) {
+                    successRateEl.className = 'text-danger'; // Red for < 75%
+                }
+            }
+            
+            // Update retirement years
+            const retirementYearsEl = document.getElementById('mc-retirement-years');
+            if (retirementYearsEl) {
+                retirementYearsEl.textContent = Math.round(stats.retirement_years);
+            }
+            
+            // Update life expectancy
+            const lifeExpectancyEl = document.getElementById('mc-life-expectancy');
+            if (lifeExpectancyEl) {
+                lifeExpectancyEl.textContent = stats.life_expectancy;
+            }
+            
+            // Update simulations count
+            const simulationsEl = document.getElementById('mc-simulations');
+            if (simulationsEl) {
+                simulationsEl.textContent = stats.simulations_run.toLocaleString();
+            }
+        } else {
+            // Hide Monte Carlo statistics if not available
+            monteCarloSection.classList.add('d-none');
         }
     }
 

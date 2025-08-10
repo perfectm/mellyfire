@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 import math
+import random
 
 class FireCalculator:
     """
@@ -91,13 +92,174 @@ class FireCalculator:
         self.annual_savings = monthly_savings * 12
         self.total_annual_savings = self.annual_savings + self.annual_401k_contribution + self.annual_employer_match
         
+        # Monte Carlo simulation parameters
+        self.monte_carlo_runs = 10000
+        self.success_rate_threshold = 0.90  # 90% success rate target
+        self.life_expectancy = self._calculate_life_expectancy(current_age)
+        self.retirement_years = self.life_expectancy - retirement_age
+        
+    def _calculate_life_expectancy(self, current_age: int) -> int:
+        """
+        Calculate life expectancy based on current age
+        Using simplified actuarial data - could be enhanced with more detailed tables
+        """
+        # Basic life expectancy calculation (US averages)
+        if current_age <= 30:
+            return 85
+        elif current_age <= 40:
+            return 84
+        elif current_age <= 50:
+            return 83
+        elif current_age <= 60:
+            return 82
+        elif current_age <= 70:
+            return 80
+        else:
+            return 78
+    
+    def _generate_market_returns(self, years: int) -> List[float]:
+        """
+        Generate random market returns for Monte Carlo simulation
+        Based on historical market data: mean ~7%, std dev ~20%
+        """
+        returns = []
+        for _ in range(years):
+            # Normal distribution with some adjustments for market realism
+            annual_return = np.random.normal(self.investment_return_rate, 0.20)
+            # Cap extreme values (market rarely goes below -50% or above +50% in a year)
+            annual_return = max(-0.50, min(0.50, annual_return))
+            returns.append(annual_return)
+        return returns
+    
+    def _simulate_retirement_scenario(self, initial_portfolio: float) -> bool:
+        """
+        Simulate a single retirement scenario
+        Returns True if portfolio survives the retirement period
+        """
+        portfolio = initial_portfolio
+        annual_expenses = self.retirement_expenses
+        
+        # Generate random returns for retirement period
+        returns = self._generate_market_returns(int(self.retirement_years))
+        
+        # Calculate Social Security benefits
+        total_ss_benefits = 0
+        if self.social_security_enabled:
+            total_ss_benefits += self.social_security_annual_benefit
+        if self.spouse_enabled and self.spouse_social_security_enabled:
+            total_ss_benefits += self.spouse_social_security_annual_benefit
+        
+        for year, annual_return in enumerate(returns):
+            current_age = self.retirement_age + year
+            
+            # Apply inflation to expenses
+            inflation_adjusted_expenses = annual_expenses * ((1 + self.inflation_rate) ** year)
+            
+            # Apply Social Security benefits if age appropriate
+            net_expenses = inflation_adjusted_expenses
+            ss_benefit_this_year = 0
+            
+            # Primary Social Security
+            if self.social_security_enabled and current_age >= self.social_security_start_age:
+                ss_benefit_this_year += self.social_security_annual_benefit
+            
+            # Spouse Social Security
+            if self.spouse_enabled and self.spouse_social_security_enabled:
+                spouse_age = self.spouse_age + (current_age - self.current_age)
+                if spouse_age >= self.spouse_social_security_start_age:
+                    ss_benefit_this_year += self.spouse_social_security_annual_benefit
+            
+            net_expenses = max(0, inflation_adjusted_expenses - ss_benefit_this_year)
+            
+            # Withdraw from portfolio first, then apply market return
+            portfolio -= net_expenses
+            if portfolio <= 0:
+                return False  # Portfolio depleted
+            
+            # Apply market return to remaining portfolio
+            portfolio *= (1 + annual_return)
+            
+            # Portfolio can't go negative
+            if portfolio <= 0:
+                return False
+        
+        return True  # Successfully survived retirement period
+    
+    def calculate_monte_carlo_fire_number(self) -> Tuple[float, Dict[str, Any]]:
+        """
+        Use Monte Carlo simulation to find FIRE number with target success rate
+        Returns the FIRE number and simulation statistics
+        """
+        # Start with traditional 4% rule as initial guess
+        traditional_fire = self.retirement_expenses / self.safe_withdrawal_rate
+        
+        # Binary search for optimal FIRE number
+        low_fire = traditional_fire * 0.5
+        high_fire = traditional_fire * 2.0
+        tolerance = 1000  # $1,000 tolerance
+        
+        best_fire_number = traditional_fire
+        simulation_stats = {}
+        
+        while high_fire - low_fire > tolerance:
+            test_fire = (low_fire + high_fire) / 2
+            
+            # Run Monte Carlo simulation for this FIRE number
+            successes = 0
+            for _ in range(self.monte_carlo_runs):
+                if self._simulate_retirement_scenario(test_fire):
+                    successes += 1
+            
+            success_rate = successes / self.monte_carlo_runs
+            
+            if success_rate >= self.success_rate_threshold:
+                # Success rate is high enough, try lower FIRE number
+                high_fire = test_fire
+                best_fire_number = test_fire
+                simulation_stats = {
+                    'success_rate': success_rate,
+                    'fire_number': test_fire,
+                    'retirement_years': self.retirement_years,
+                    'life_expectancy': self.life_expectancy,
+                    'simulations_run': self.monte_carlo_runs
+                }
+            else:
+                # Success rate too low, need higher FIRE number
+                low_fire = test_fire
+        
+        # If no simulation stats were saved (shouldn't happen), create default
+        if not simulation_stats:
+            simulation_stats = {
+                'success_rate': 0.0,
+                'fire_number': best_fire_number,
+                'retirement_years': self.retirement_years,
+                'life_expectancy': self.life_expectancy,
+                'simulations_run': self.monte_carlo_runs
+            }
+        
+        return best_fire_number, simulation_stats
+
     def calculate_fire_number(self) -> float:
         """
-        Calculate the FIRE number - amount needed for full retirement
-        Using the 4% rule (or user-specified safe withdrawal rate)
-        Accounts for Social Security benefits (user + spouse) if enabled
-        
-        For early retirement before Social Security, calculates bridge assets needed
+        Calculate the FIRE number using Monte Carlo simulation for more accurate results
+        Falls back to traditional 4% rule if simulation fails
+        """
+        try:
+            # Use Monte Carlo simulation for more accurate FIRE number
+            monte_carlo_fire, simulation_stats = self.calculate_monte_carlo_fire_number()
+            
+            # Store simulation stats for later use
+            self.last_simulation_stats = simulation_stats
+            
+            return monte_carlo_fire
+        except Exception as e:
+            # Fallback to traditional calculation if Monte Carlo fails
+            print(f"Monte Carlo simulation failed, using traditional method: {e}")
+            return self._calculate_traditional_fire_number()
+    
+    def _calculate_traditional_fire_number(self) -> float:
+        """
+        Traditional FIRE calculation using 4% rule (fallback method)
         """
         # Determine the earliest Social Security start age
         earliest_ss_age = None
@@ -362,6 +524,9 @@ class FireCalculator:
             'achieved_fire': projection_df['achieved_fire'].tolist()
         }
         
+        # Include Monte Carlo simulation statistics if available
+        simulation_stats = getattr(self, 'last_simulation_stats', None)
+        
         return {
             'fire_number': fire_number,
             'coast_fire_number': coast_fire_number,
@@ -371,5 +536,6 @@ class FireCalculator:
             'projection_data': projection_data,
             'current_coast_fire_status': self.current_assets >= coast_fire_number,
             'current_fire_status': self.current_assets >= fire_number,
-            'monthly_shortfall': max(0, (fire_number - self.current_assets) / years_to_fire / 12) if years_to_fire and years_to_fire != float('inf') else 0
+            'monthly_shortfall': max(0, (fire_number - self.current_assets) / years_to_fire / 12) if years_to_fire and years_to_fire != float('inf') else 0,
+            'monte_carlo_stats': simulation_stats
         }
