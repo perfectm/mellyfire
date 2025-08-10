@@ -137,11 +137,15 @@ class AuthManager {
     }
 
     async loadCalculation(calculationId) {
+        console.log('loadCalculation called with ID:', calculationId);
         try {
             const response = await fetch('/api/calculations');
+            console.log('Fetch response status:', response.status);
             if (response.ok) {
                 const calculations = await response.json();
+                console.log('All calculations:', calculations);
                 const calculation = calculations.find(calc => calc.id === calculationId);
+                console.log('Found calculation:', calculation);
                 
                 if (calculation) {
                     this.populateFormWithCalculation(calculation);
@@ -171,6 +175,7 @@ class AuthManager {
     }
     
     populateFormWithCalculation(calc) {
+        console.log('Populating form with calculation:', calc);
         // Helper function to safely set value
         const setValue = (id, value) => {
             const element = document.getElementById(id);
