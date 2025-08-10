@@ -1,0 +1,262 @@
+/* Custom FIRE Calculator Styles */
+
+:root {
+    --fire-primary: #6c5ce7;
+    --fire-secondary: #fd79a8;
+    --fire-success: #00b894;
+    --fire-warning: #fdcb6e;
+    --fire-info: #74b9ff;
+    --fire-danger: #e84393;
+}
+
+/* Override Bootstrap primary color */
+.btn-primary, .bg-primary, .alert-primary {
+    background-color: var(--fire-primary) !important;
+    border-color: var(--fire-primary) !important;
+}
+
+.text-primary {
+    color: var(--fire-primary) !important;
+}
+
+/* Sticky calculator form */
+.sticky-top {
+    position: sticky;
+    z-index: 1020;
+}
+
+/* Hero section gradient */
+.hero-section {
+    background: linear-gradient(135deg, var(--fire-primary) 0%, var(--fire-secondary) 100%);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+}
+
+/* Card enhancements */
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+/* Form styling */
+.form-control {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--fire-primary);
+    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+}
+
+/* Button styling */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* Navbar enhancements */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin: 0 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Alert styling */
+.alert {
+    border: none;
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    background-color: rgba(0, 184, 148, 0.1);
+    border-left-color: var(--fire-success);
+    color: var(--fire-success);
+}
+
+.alert-warning {
+    background-color: rgba(253, 203, 110, 0.1);
+    border-left-color: var(--fire-warning);
+    color: #b7791f;
+}
+
+.alert-info {
+    background-color: rgba(116, 185, 255, 0.1);
+    border-left-color: var(--fire-info);
+    color: #3742fa;
+}
+
+/* Feature icons */
+.feature-icon {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.feature-icon i {
+    transition: all 0.3s ease;
+}
+
+.card:hover .feature-icon i {
+    transform: scale(1.1);
+}
+
+/* Info cards */
+.info-card {
+    background: white;
+    border-radius: 12px;
+    border-left: 4px solid var(--fire-primary);
+    height: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Chart container */
+#projection-chart {
+    max-height: 400px;
+}
+
+/* Status indicators */
+#status-indicators .alert {
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+/* Loading states */
+.btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn.loading::after {
+    content: '';
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .hero-section {
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .sticky-top {
+        position: relative;
+    }
+    
+    .feature-icon {
+        height: 80px;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bs-body-bg: #1a1a1a;
+        --bs-body-color: #ffffff;
+    }
+    
+    .card {
+        background-color: #2d3748;
+        color: #ffffff;
+    }
+    
+    .form-control {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #ffffff;
+    }
+    
+    .form-control:focus {
+        background-color: #2d3748;
+        color: #ffffff;
+    }
+    
+    .info-card {
+        background-color: #2d3748;
+        color: #ffffff;
+    }
+}
+
+/* Animation for number changes */
+.number-animate {
+    transition: all 0.5s ease;
+}
+
+/* Pulse animation for important metrics */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Footer styling */
+footer {
+    margin-top: auto;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
