@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a comprehensive FIRE (Financial Independence, Retire Early) calculator web application built with FastAPI. It features Coast FIRE calculations, user authentication, data persistence, and interactive visualizations. The application is inspired by WalletBurst's Coast FIRE calculator and addresses common questions from the r/coastFIRE community.
+**MellyFIRE Calculator** - The Internet's most advanced FIRE calculator web application built with FastAPI. Features Monte Carlo simulation, Coast FIRE calculations, 401K optimization, Social Security integration, user authentication, and sophisticated data visualizations. The application uses advanced statistical modeling to provide more accurate FIRE numbers than traditional 4% rule calculators.
 
 ## Development Commands
 
@@ -31,11 +31,14 @@ export DATABASE_URL="postgresql://username:password@localhost:5432/fire_calculat
 
 ### Testing FIRE Calculations
 ```bash
-# Test calculation logic directly
+# Test Monte Carlo simulation directly
 python -c "
 from fire_calculator import FireCalculator
-calc = FireCalculator(30, 65, 50000, 5000, 3000, 1500, 40000)
-print(calc.calculate_all())
+calc = FireCalculator(30, 65, 100000, 7000, 3000, 1500, 40000)
+results = calc.calculate_all()
+print(f'Traditional vs Monte Carlo FIRE: ${results[\"fire_number\"]:,.0f}')
+if hasattr(calc, 'last_simulation_stats'):
+    print(f'Success Rate: {calc.last_simulation_stats[\"success_rate\"]:.1%}')
 "
 ```
 
@@ -62,14 +65,14 @@ curl -X POST http://localhost:8000/api/calculate \
 - `models.py` - SQLAlchemy database models for users and calculations
 - `schemas.py` - Pydantic data validation schemas
 - `auth.py` - JWT authentication and password hashing utilities
-- `fire_calculator.py` - Core FIRE calculation engine with Coast FIRE logic
+- `fire_calculator.py` - Advanced FIRE calculation engine with Monte Carlo simulation, Coast FIRE logic, 401K optimization, and Social Security integration
 
 ### Frontend Components
 - `templates/` - Jinja2 HTML templates (base, index, calculator, login, register)
 - `static/css/style.css` - Custom styling with Bootstrap integration
 - `static/js/` - JavaScript for authentication, calculator UI, and API interactions
-  - `auth.js` - Authentication management
-  - `calculator.js` - FIRE calculation UI and Chart.js integration
+  - `auth.js` - Authentication management with auto-load of recent calculations
+  - `calculator.js` - Advanced FIRE calculation UI with dual-axis Chart.js visualizations and interactive slider controls
   - `main.js` - Common utilities and page interactions
 
 ### Legacy Components (Reference Only)
@@ -79,12 +82,16 @@ curl -X POST http://localhost:8000/api/calculate \
 
 ## Key Architecture Components
 
-### FIRE Calculation Engine (`fire_calculator.py`)
+### Advanced FIRE Calculation Engine (`fire_calculator.py`)
+- **Monte Carlo Simulation**: 10,000-scenario analysis with 90% success rate optimization
+- **Life Expectancy Integration**: Age-based retirement duration calculations
 - **Coast FIRE Calculator**: Determines amount needed today to coast to retirement
-- **Full FIRE Calculator**: Calculates complete financial independence requirements
-- **Projection Engine**: Year-by-year asset growth and withdrawal projections
-- **Inflation Modeling**: Real return rates and inflation-adjusted expenses
-- **Special Scenarios**: Social Security integration, early retirement penalties
+- **Full FIRE Calculator**: More accurate calculations than traditional 4% rule
+- **401K Optimization**: Employee contributions and employer matching calculations
+- **Social Security Integration**: Primary and spouse benefits with timing optimization
+- **Advanced Mode**: Separate retirement vs taxable account management
+- **Projection Engine**: Year-by-year asset growth with realistic market volatility
+- **Sequence of Returns Risk**: Accounts for market timing in early retirement
 
 ### Authentication System
 - JWT token-based authentication with secure password hashing
@@ -96,29 +103,43 @@ curl -X POST http://localhost:8000/api/calculate \
 - User accounts with calculation history
 - Automatic schema creation and migration support
 
-### Frontend Architecture
+### Advanced Frontend Architecture
 - **Progressive Enhancement**: Works without JavaScript, enhanced with it
-- **Responsive Design**: Bootstrap-based UI that works on all devices
-- **Interactive Charts**: Chart.js for asset projection visualizations
+- **Responsive Design**: Bootstrap-based UI with enhanced dark theme support
+- **Interactive Dual-Axis Charts**: Chart.js with separate scales for assets vs targets
+- **Interactive Controls**: Retirement age slider with real-time year calculation
+- **Auto-load Functionality**: Automatic loading of most recent calculations on login
+- **Enhanced Contrast**: Accessibility-focused design with proper contrast ratios
 - **Guest Mode**: Try calculations without account creation
+- **Real-time Updates**: Live calculation updates as user adjusts parameters
 
 ## Core Calculations
 
-### Coast FIRE Formula
+### Monte Carlo FIRE Number
+Uses sophisticated simulation instead of simple 4% rule:
+- **10,000 scenarios** with random market returns (7% mean, 20% std dev)
+- **Life expectancy based** on current age (85 for ≤30, declining with age)
+- **90% success rate** threshold for portfolio survival
+- **Binary search optimization** to find minimum required assets
+- **Results**: Typically 20-40% higher than traditional 4% rule
+
+### Traditional Coast FIRE Formula (Fallback)
 ```
 Coast FIRE Number = FIRE Number ÷ (1 + Real Return Rate)^Years to Retirement
 Real Return Rate = Investment Return Rate - Inflation Rate
 ```
 
-### FIRE Number Formula
+### 401K Optimization
 ```
-FIRE Number = Annual Retirement Expenses ÷ Safe Withdrawal Rate
+Employee Monthly = Monthly Income × Contribution Percentage
+Employer Match = Employee Contribution × Match Percentage
+Total 401K = Employee + Match (added to retirement accounts)
 ```
 
-### Years to FIRE Calculation
-Uses compound interest with regular contributions:
+### Social Security Integration
 ```
-FV = PV(1+r)^t + PMT[((1+r)^t - 1)/r]
+Net FIRE Needed = Max(0, Annual Expenses - Total SS Benefits) ÷ Safe Withdrawal Rate
+Bridge Assets = (Retirement Age - SS Age) × Annual Expenses (if retiring early)
 ```
 
 ## API Endpoints
@@ -140,12 +161,27 @@ FV = PV(1+r)^t + PMT[((1+r)^t - 1)/r]
 
 ## Development Notes
 
-- The application handles both authenticated users (with saved calculations) and guest users
-- Chart.js provides interactive visualizations of asset growth over time
-- Bootstrap 5 is used for responsive design
-- Font Awesome provides icons throughout the interface
-- All calculations are validated both client-side and server-side
-- The database automatically falls back from PostgreSQL to SQLite if connection fails
+### Recent Major Features (2024)
+- **Monte Carlo Simulation**: Advanced statistical modeling for accurate FIRE numbers
+- **Dual-Axis Charts**: Separate scales for asset growth vs FIRE targets
+- **Interactive Slider**: Retirement age selection with real-time year display  
+- **Auto-load**: Most recent calculation loads automatically on login
+- **Enhanced Contrast**: Improved accessibility with proper text contrast ratios
+- **Google AdSense**: Monetization integration ready for deployment
+
+### Architecture Notes
+- Application handles both authenticated users (with saved calculations) and guest users
+- Chart.js provides sophisticated dual-axis visualizations of asset projections
+- Bootstrap 5 with custom dark theme styling for optimal readability
+- Font Awesome provides comprehensive icon system throughout interface
+- All calculations validated both client-side (guest) and server-side (authenticated)
+- Database automatically falls back from PostgreSQL to SQLite for development
+- Advanced mode separates retirement accounts from taxable accounts for complex scenarios
+
+### Current Status
+- **Repository**: https://github.com/perfectm/mellyfire
+- **Branding**: "MellyFIRE Calculator - The Internet's most advanced FIRE calculator"
+- **Production Ready**: Fully functional with comprehensive feature set
 
 ## Configuration
 
