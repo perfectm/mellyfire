@@ -120,9 +120,11 @@
                 </div>
                 
                 <div class="text-center mt-4">
-                    <p class="text-muted">
-                        <strong>Formula:</strong> Coast FIRE Number = FIRE Number ÷ (1 + Real Return Rate)^Years to Retirement
-                    </p>
+                    <div class="formula-highlight p-4 rounded shadow-sm">
+                        <p class="mb-0 formula-text">
+                            <strong>Formula:</strong> Coast FIRE Number = FIRE Number ÷ (1 + Real Return Rate)<sup>Years to Retirement</sup>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,6 +176,52 @@
 
 .bg-gradient-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.formula-highlight {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border: 2px solid #6c5ce7;
+    color: #ffffff;
+}
+
+.formula-text {
+    color: #ffffff !important;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.formula-text strong {
+    color: #74b9ff !important;
+}
+
+/* Info cards on homepage with better contrast */
+.info-card {
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0;
+    color: #2d3748 !important;
+}
+
+.info-card h4 {
+    color: #2d3748 !important;
+}
+
+.info-card p {
+    color: #4a5568 !important;
+    font-weight: 500;
+}
+
+.info-card .text-primary {
+    color: #6c5ce7 !important;
+}
+
+.info-card .text-success {
+    color: #00b894 !important;
+}
+
+.info-card ul li {
+    color: #4a5568 !important;
+    font-weight: 500;
 }
 </style>
 {% endblock %}
