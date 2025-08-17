@@ -120,12 +120,14 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @app.post("/api/login")
 async def login(user: UserLogin, db: Session = Depends(get_db)):
-    # Verify user credentials
-    db_user = db.query(User).filter(User.email == user.email).first()
+    # Verify user credentials - check both email and username
+    db_user = db.query(User).filter(
+        (User.email == user.email) | (User.username == user.email)
+    ).first()
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password"
+            detail="Incorrect email/username or password"
         )
     
     # Create access token
@@ -279,4 +281,4 @@ async def delete_calculation(
     return {"message": "Calculation deleted successfully"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8002, reload=True)
