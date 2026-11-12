@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 import uvicorn
 import os
+import logging
 from pathlib import Path
 
 from database import engine, get_db
@@ -19,6 +20,9 @@ from config import settings
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+# Configure logging to reduce noise from invalid HTTP requests
+logging.getLogger("uvicorn.error").setLevel(logging.ERROR)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -281,4 +285,7 @@ async def delete_calculation(
     return {"message": "Calculation deleted successfully"}
 
 if __name__ == "__main__":
+    # For HTTPS, add ssl_keyfile and ssl_certfile parameters
+    # uvicorn.run("main:app", host="0.0.0.0", port=8002, reload=True, 
+    #             ssl_keyfile="path/to/key.pem", ssl_certfile="path/to/cert.pem")
     uvicorn.run("main:app", host="0.0.0.0", port=8002, reload=True)
